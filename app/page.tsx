@@ -10,10 +10,33 @@ declare global {interface Window {webkitSpeechRecognition?:any; SpeechRecognitio
 export default function Home(){
  const [tab,setTab]=useState("companion"),[input,setInput]=useState(""),[reply,setReply]=useState(""),[threats,setThreats]=useState<any[]>([]),[rewriteStatus,setRewriteStatus]=useState(""),[listening,setListening]=useState(false),[speaking,setSpeaking]=useState(false),[time,setTime]=useState(new Date()),[online,setOnline]=useState(true),[mode,setMode]=useState("Companion"),[memories,setMemories]=useState<any[]>([]),[presence,setPresence]=useState("present");
  const recognition=useRef<any>(null);
- useEffect(()=>{const t=setInterval(()=>setTime(new Date()),1000);return()=>clearInterval(t)},[]);
+ useEffect(()=>{const t=setInterval(()=>setTime(new Date()),1000);return()=>clearInterval(t)},[]); useEffect(()=>{startWakeWord();return()=>recognition.current?.stop()},[]);
  useEffect(()=>{setOnline(navigator.onLine);const a=()=>setOnline(true),b=()=>setOnline(false);addEventListener("online",a);addEventListener("offline",b);return()=>{removeEventListener("online",a);removeEventListener("offline",b)}},[]);
  useEffect(()=>{(async()=>{try{let current=auth.currentUser;if(!current){const cred=await signInAnonymously(auth);current=cred.user}const token=await current.getIdToken();const r=await fetch("/api/companion",{headers:{authorization:`Bearer ${token}`}});const d=await r.json();if(d.ok){setMemories(d.memories||[]);setPresence(d.presence||"present")}}catch{}})()},[]);\n const greeting=useMemo(()=>time.getHours()<12?"GOOD MORNING":time.getHours()<18?"GOOD AFTERNOON":"GOOD EVENING",[time]);
  function speak(text:string){if(typeof window==="undefined"||!("speechSynthesis"in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text.slice(0,1400));u.rate=1.02;u.pitch=.92;u.onstart=()=>setSpeaking(true);u.onend=()=>setSpeaking(false);speechSynthesis.speak(u)}
+ function startWakeWord(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R||recognition.current)return;
+  const r=new R();
+  recognition.current=r;
+  r.lang="en-IN";
+  r.interimResults=false;
+  r.continuous=true;
+  r.onstart=()=>setListening(true);
+  r.onend=()=>setListening(false);
+  r.onerror=()=>setListening(false);
+  r.onresult=(e:any)=>{
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(!e.results[i].isFinal)continue;
+      const spoken=e.results[i][0].transcript.trim();
+      if(/\b(thara|tara)\b/i.test(spoken)){
+        const command=spoken.replace(/\b(thara|tara)\b[,:]?/i,"").trim();
+        if(command){setInput(command);setTimeout(()=>ask(command),50)}else speak("I'm here.");
+      }
+    }
+  };
+  r.start();
+}
  function toggleVoice(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){setReply("Voice input is not supported by this browser. Try Chrome/Android speech recognition.");return}if(listening){recognition.current?.stop();return}const r=new R();recognition.current=r;r.lang="en-IN";r.interimResults=false;r.continuous=false;r.onstart=()=>setListening(true);r.onend=()=>setListening(false);r.onerror=()=>setListening(false);r.onresult=(e:any)=>{const text=e.results[0][0].transcript;setInput(text);setTimeout(()=>ask(text),50)};r.start()}
  async function selfRewrite(token:string){setRewriteStatus("SELF-REWRITE AUTHORIZED — generating a bounded patch…");const r=await fetch("/api/self-rewrite",{method:"POST",headers:{"content-type":"application/json","authorization":`Bearer ${token}`},body:JSON.stringify({message:"THARA, REWRITE YOUR OWN CODE"})});const d=await r.json();setRewriteStatus(d.ok?`SELF-REWRITE COMPLETE: ${(d.changed||[]).join(", ")||"no safe change"}`:(d.error||"Self-rewrite failed"))}
  async function ask(command=input){if(!command.trim())return;let current=auth.currentUser;if(!current){const cred=await signInAnonymously(auth);current=cred.user}const token=await current.getIdToken();if(command.trim().toUpperCase()==="THARA, REWRITE YOUR OWN CODE"){await selfRewrite(token);setInput("");return}const r=await fetch("/api/assistant",{method:"POST",headers:{"content-type":"application/json","authorization":`Bearer ${token}`},body:JSON.stringify({message:command})});const d=await r.json();setReply(d.reply||d.error||"");setThreats(d.threats||[]);setInput("");if(d.reply)speak(d.reply)}
