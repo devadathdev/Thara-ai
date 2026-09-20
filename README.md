@@ -506,3 +506,20 @@ The system should remain **user-controlled, security-bounded and transparent abo
 **Project:** THARA AI  
 **Architecture:** Next.js + TypeScript + Firebase + server-side model routing  
 **Interface:** Cinematic dark command center / JARVIS-inspired HUD
+
+
+## THARA V5 — Capability Fabric
+
+THARA V5 unifies the requested capability families behind one authenticated capability fabric:
+
+- Intelligence Core + Agent Swarm
+- Memory Vault + Memory Knowledge Graph
+- Autonomous Forge + Code Repair
+- Deep Research + Research Workspace
+- Voice Core + Voice Command Router
+- Vision Core + Document Intelligence
+- Sentinel Security Gateway + Tool Permission Gateway
+- Latency Engine + Parallel Execution
+- THARA Skills SDK + Automation Core + THARA API
+
+The capability registry is available at `/api/thara` and the dedicated dashboard at `/thara`. Capability routing records lightweight telemetry under each user's scoped Firestore collection. Consequential automation remains guarded by explicit approval boundaries.
