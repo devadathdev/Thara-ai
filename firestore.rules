@@ -30,6 +30,21 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    match /users/{uid}/missions/{missionId} {
+      allow read: if own(uid);
+      allow create: if own(uid)
+        && request.resource.data.keys().hasOnly(['id','title','goal','status','steps','createdAt','updatedAt','approvalRequired'])
+        && request.resource.data.goal is string
+        && request.resource.data.goal.size() <= 4000
+        && request.resource.data.steps is list
+        && request.resource.data.steps.size() <= 20
+        && request.resource.data.status in ['planned','awaiting_approval','running','completed','failed','cancelled'];
+      allow update: if own(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','updatedAt'])
+        && request.resource.data.status in ['planned','awaiting_approval','running','completed','failed','cancelled'];
+      allow delete: if false;
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }
