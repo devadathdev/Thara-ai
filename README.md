@@ -292,17 +292,11 @@ These are designed to become connectors to real datasets, models, evaluation sys
 
 ## 🤖 Model Routing
 
-THARA supports a server-side provider routing architecture.
+THARA supports server-side provider routing through OpenRouter and Gemini, with role-specific model configuration for orchestration, general tasks, coding and reasoning.
 
-Primary options include:
+Example configuration:
 
-- OpenRouter
-- Gemini
-- OpenRouter free fallback
-
-Environment configuration:
-
-```env
+~~~env
 OPENROUTER_API_KEY=
 OPENROUTER_ORCHESTRATOR_MODEL=
 OPENROUTER_GENERAL_MODEL=openrouter/free
@@ -310,9 +304,9 @@ OPENROUTER_CODING_MODEL=openrouter/free
 OPENROUTER_REASONING_MODEL=openrouter/free
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-3.1-flash-lite
-```
-
-The exact OpenRouter model identifier should be configured explicitly rather than hard-coded to an assumed model slug.
+TAVILY_API_KEY=
+HUGGINGFACE_API_TOKEN=
+~~~
 
 ---
 
@@ -378,30 +372,43 @@ npm --version
 
 ## 📁 Project Structure
 
-```text
+~~~text
 THARA AI
 ├── app/
 │   ├── api/
 │   │   ├── assistant/
+│   │   ├── companion/
+│   │   ├── datasets/
+│   │   │   ├── search/
+│   │   │   └── ingest/
+│   │   ├── knowledge-graph/
+│   │   ├── research/
 │   │   ├── self-rewrite/
-│   │   └── status/
+│   │   └── web/
 │   ├── globals.css
 │   ├── layout.tsx
 │   └── page.tsx
 ├── lib/
+│   ├── datasets/
+│   │   ├── providers.ts
+│   │   └── retrieval.ts
 │   ├── assistant.ts
-│   ├── crypto.ts
-│   ├── engineering-team.ts
-│   ├── firebase.ts
-│   ├── firebase-admin.ts
+│   ├── companion.ts
+│   ├── dataset-hub.ts
+│   ├── knowledge-graph.ts
+│   ├── language-detection.ts
+│   ├── languages.ts
 │   ├── model-router.ts
+│   ├── research.ts
 │   ├── security-agent.ts
+│   ├── web-browser.ts
 │   └── self-rewrite.ts
 ├── firestore.rules
 ├── next.config.*
 ├── package.json
-└── tsconfig.json
-```
+├── tsconfig.json
+└── .env.example
+~~~
 
 ---
 
@@ -434,34 +441,39 @@ The current self-rewrite system is a **controlled development capability**, not 
 
 ## Roadmap
 
-### THARA V1
-- [x] Command center
-- [x] Voice input/output
-- [x] Model routing foundation
-- [x] Engineering-team architecture
-- [x] Sentinel security layer
+### THARA V1 — Companion Foundation
+- [x] Voice interaction
+- [x] Companion modes
+- [x] Persistent memory
 - [x] Authenticated assistant API
-- [x] Controlled self-rewrite
-- [x] Holographic Workshop UI
+- [x] Model routing
+- [x] Sentinel foundation
 
-### THARA V2
-- [ ] Distributed memory
-- [ ] Persistent task/mission queue
-- [ ] WebAuthn/passkeys
-- [ ] Firebase App Check
-- [ ] Real-time system telemetry
+### THARA V2 — Intelligence Fabric
+- [x] Knowledge Graph
+- [x] Semantic memory retrieval
+- [x] Multilingual support
+- [x] Automatic language detection
+- [x] Web browsing
+- [x] Multi-source research
+
+### THARA V3 — Data + Workshop
+- [x] Dataset Hub
+- [x] Federated dataset discovery
+- [x] Safe dataset preview/indexing
+- [x] Dataset retrieval
+- [x] Dataset/Knowledge Graph connection
+- [x] Workshop V1 → V8 architecture
+
+### THARA V4 — Advanced Autonomy
+- [ ] Persistent mission/task queue
 - [ ] Tool permission manager
-- [ ] Agent execution runtime
-- [ ] Automated test/verification loop
-
-### THARA V3
 - [ ] Native Android companion
-- [ ] Reliable wake-word engine
-- [ ] Device-control permissions
+- [ ] Low-power native wake-word engine
 - [ ] Local model fallback
 - [ ] Sandboxed autonomous coding
-- [ ] Secure code-review pipeline
-- [ ] Long-term learning/evaluation system
+- [ ] Benchmark automation
+- [ ] Long-term evaluation/learning
 
 ---
 
