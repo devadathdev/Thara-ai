@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (!message || message.length > 4000) return NextResponse.json({error:"message must be 1–4000 characters"},{status:400});
     const domains = routeCapability(message);
     await getFirestore().collection("users").doc(user.uid).collection("tharaTelemetry").add({
-      createdAt: Date.now(), event:"capability-route", domains, messageLength:message.length
+      createdAt: Date.now(), event:"capability-route", domains, messageLength:message.length, success:true
     });
     return NextResponse.json({ok:true,domains,capabilities:THARA_CAPABILITIES.filter(c=>domains.includes(c.domain))});
   } catch {
