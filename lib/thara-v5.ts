@@ -1,0 +1,60 @@
+import { getFirestore } from "firebase-admin/firestore";
+
+export type TharaCapability = {
+  id: string;
+  name: string;
+  domain: "intelligence"|"memory"|"builder"|"research"|"voice"|"multimodal"|"security"|"performance"|"ecosystem";
+  status: "online"|"guarded"|"beta";
+  description: string;
+  actions: string[];
+};
+
+export const THARA_CAPABILITIES: TharaCapability[] = [
+  {id:"intelligence-core",name:"Intelligence Core",domain:"intelligence",status:"online",description:"Routes requests through planning, specialist delegation, verification and synthesis.",actions:["plan","route","verify","synthesize"]},
+  {id:"agent-swarm",name:"Agent Swarm",domain:"intelligence",status:"online",description:"Coordinates specialist agents for complex engineering and research tasks.",actions:["decompose","delegate","merge"]},
+  {id:"memory-vault",name:"Memory Vault",domain:"memory",status:"online",description:"User-scoped durable memory with relevance retrieval and timeline metadata.",actions:["remember","retrieve","prioritize"]},
+  {id:"memory-graph",name:"Memory Knowledge Graph",domain:"memory",status:"online",description:"Connects memories, projects, datasets and concepts into a navigable graph.",actions:["link","relate","enrich"]},
+  {id:"autonomous-forge",name:"Autonomous Forge",domain:"builder",status:"guarded",description:"Mission-based build workflow with explicit approval boundaries.",actions:["plan","build","test","verify","package"]},
+  {id:"code-repair",name:"Code Repair",domain:"builder",status:"guarded",description:"Structured debugging and bounded code-change planning.",actions:["diagnose","patch","test","rollback"]},
+  {id:"deep-research",name:"Deep Research",domain:"research",status:"online",description:"Multi-source research with source-aware context and evidence handling.",actions:["search","read","cross-check","cite"]},
+  {id:"research-workspace",name:"Research Workspace",domain:"research",status:"beta",description:"Stores research missions, findings and reproducible source trails.",actions:["save","compare","summarize"]},
+  {id:"voice-core",name:"Voice Core",domain:"voice",status:"online",description:"Wake-word, speech recognition and soft speech synthesis through supported browser/device APIs.",actions:["listen","transcribe","speak"]},
+  {id:"voice-command",name:"Voice Command Router",domain:"voice",status:"online",description:"Maps spoken THARA commands into the same secure assistant pipeline.",actions:["wake","route","execute"]},
+  {id:"vision-core",name:"Vision Core",domain:"multimodal",status:"beta",description:"Multimodal input boundary for images, screenshots and visual documents.",actions:["inspect","extract","explain"]},
+  {id:"document-intelligence",name:"Document Intelligence",domain:"multimodal",status:"beta",description:"Designed for structured extraction and analysis of supplied documents.",actions:["parse","extract","summarize"]},
+  {id:"sentinel-gateway",name:"Sentinel Security Gateway",domain:"security",status:"online",description:"Threat analysis, prompt-injection defense and defensive recommendations.",actions:["scan","triage","harden","alert"]},
+  {id:"permission-gateway",name:"Tool Permission Gateway",domain:"security",status:"guarded",description:"Separates read, write, deploy and high-impact actions with approval boundaries.",actions:["authorize","deny","audit"]},
+  {id:"latency-engine",name:"Latency Engine",domain:"performance",status:"online",description:"Tracks end-to-end latency and keeps fast-path requests lightweight.",actions:["measure","route","budget"]},
+  {id:"parallel-execution",name:"Parallel Execution",domain:"performance",status:"online",description:"Runs independent retrieval operations concurrently to reduce waiting.",actions:["parallelize","cache","compress"]},
+  {id:"skills-sdk",name:"THARA Skills SDK",domain:"ecosystem",status:"beta",description:"Capability registry for adding bounded tools and specialist skills.",actions:["register","discover","enable"]},
+  {id:"automation-core",name:"Automation Core",domain:"ecosystem",status:"guarded",description:"Mission and workflow automation with explicit control boundaries.",actions:["schedule","run","verify"]},
+  {id:"thara-api",name:"THARA API",domain:"ecosystem",status:"beta",description:"Stable internal capability surface for THARA-connected applications.",actions:["discover","invoke","observe"]}
+];
+
+export function capabilitySummary() {
+  return THARA_CAPABILITIES.reduce<Record<string, number>>((a,c)=>{a[c.domain]=(a[c.domain]||0)+1;return a;},{});
+}
+
+export function routeCapability(message: string) {
+  const m = message.toLowerCase();
+  const matches: string[] = [];
+  const rules: [RegExp,string][] = [
+    [/\b(memory|remember|forgot|previous|knowledge graph)\b/,"memory"],
+    [/\b(build|code|debug|app|deploy|github|vercel)\b/,"builder"],
+    [/\b(research|paper|source|latest|investigate)\b/,"research"],
+    [/\b(voice|speak|listen|wake|microphone)\b/,"voice"],
+    [/\b(image|photo|screenshot|vision|pdf|document)\b/,"multimodal"],
+    [/\b(security|phishing|malware|threat|secret|prompt injection)\b/,"security"],
+    [/\b(latency|fast|performance|speed|cache)\b/,"performance"],
+    [/\b(skill|plugin|automation|workflow|api)\b/,"ecosystem"],
+  ];
+  for (const [re,d] of rules) if (re.test(m)) matches.push(d);
+  if (!matches.length) matches.push("intelligence");
+  return [...new Set(matches)];
+}
+
+export async function getCapabilityTelemetry(uid: string) {
+  const db = getFirestore();
+  const snap = await db.collection("users").doc(uid).collection("tharaTelemetry").orderBy("createdAt","desc").limit(25).get();
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
