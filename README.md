@@ -466,7 +466,11 @@ The current self-rewrite system is a **controlled development capability**, not 
 - [x] Workshop V1 → V8 architecture
 
 ### THARA V4 — Advanced Autonomy
-- [ ] Persistent mission/task queue
+- [x] Persistent mission/task queue
+- [x] Explicit approval boundary for consequential missions
+- [x] User-scoped mission API and Firestore rules
+- [x] V4 Autonomous Forge UI
+- [x] Permission model foundation
 - [ ] Tool permission manager
 - [ ] Native Android companion
 - [ ] Low-power native wake-word engine
