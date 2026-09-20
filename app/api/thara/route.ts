@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   try {
     const user = await verifyBearerToken(req);
     const telemetry = await getCapabilityTelemetry(user.uid).catch(()=>[]);
-    return NextResponse.json({ok:true,version:"V5",capabilities:THARA_CAPABILITIES,summary:capabilitySummary(),telemetry});
+    return NextResponse.json({ok:true,version:"V6",capabilities:THARA_CAPABILITIES,summary:capabilitySummary(),telemetry});
   } catch {
     return NextResponse.json({error:"Authentication failed"},{status:401});
   }
