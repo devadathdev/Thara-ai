@@ -10,6 +10,7 @@ import { autonomousResearch, researchContext } from "@/lib/research";
 import { getFirestore } from "firebase-admin/firestore";
 import { buildKnowledgeGraph, relevantMemoryIds } from "@/lib/knowledge-graph";
 import { getLanguage } from "@/lib/languages";
+import { detectLanguage } from "@/lib/language-detection";
 
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 30;
@@ -31,7 +32,9 @@ export async function POST(req: Request) {
     if (contentLength > 40_000) return NextResponse.json({ error: "Request too large" }, { status: 413 });
     const body = await req.json();
     const message = typeof body.message === "string" ? body.message.trim() : "";
-    const language = getLanguage(typeof body.language === "string" ? body.language : "en-US");
+    const requestedLanguage = typeof body.language === "string" ? body.language : "auto";
+    const detected = requestedLanguage === "auto" ? detectLanguage(message) : { code: requestedLanguage, confidence: 1, signals: ["user-selected"] };
+    const language = getLanguage(detected.code);
     if (!message || message.length > 8_000) return NextResponse.json({ error: "message must be 1–8000 characters" }, { status: 400 });
     if (isSelfRewriteCommand(message)) return NextResponse.json({ reply: "SELF-REWRITE AUTHORIZATION DETECTED. Send the command to the self-rewrite control endpoint to apply a bounded source rewrite.", selfRewrite: true, threats: [] }, { headers: { "Cache-Control": "no-store" } });
 
