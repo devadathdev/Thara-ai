@@ -46,13 +46,13 @@ export function routeCapability(message: string) {
   const matches: string[] = [];
   const rules: [RegExp,string][] = [
     [/\b(memory|remember|forgot|previous|knowledge graph)\b/,"memory"],
-    [/\b(build|code|debug|app|deploy|github|vercel)\b/,"builder"],
-    [/\b(research|paper|source|latest|investigate)\b/,"research"],
-    [/\b(voice|speak|listen|wake|microphone)\b/,"voice"],
+    [/\b(build|code|debug|app|deploy|github|vercel|sandbox|autonomous coding)\b/,"builder"],
+    [/\b(research|paper|source|latest|investigate|evaluate|benchmark)\b/,"research"],
+    [/\b(voice|speak|listen|wake|wake word|microphone)\b/,"voice"],
     [/\b(image|photo|screenshot|vision|pdf|document)\b/,"multimodal"],
     [/\b(security|phishing|malware|threat|secret|prompt injection)\b/,"security"],
-    [/\b(latency|fast|performance|speed|cache)\b/,"performance"],
-    [/\b(skill|plugin|automation|workflow|api)\b/,"ecosystem"],
+    [/\b(latency|fast|performance|speed|cache|local model|offline|benchmark|evaluation)\b/,"performance"],
+    [/\b(skill|plugin|automation|workflow|api|android|mobile|companion)\b/,"ecosystem"],
   ];
   for (const [re,d] of rules) if (re.test(m)) matches.push(d);
   if (!matches.length) matches.push("intelligence");
