@@ -9,11 +9,13 @@
 
 ## What is THARA?
 
-THARA is a JARVIS-inspired personal AI interface built around a command-center experience rather than a conventional chat window.
+THARA is a persistent personal AI companion built around presence, voice, memory, context and action rather than a conventional chatbot. The command center is now a secondary surface; the companion itself is the product.
 
 It combines:
 
-- **Command-first AI interaction**
+- **Companion-first interaction**
+- **Persistent personal memory and context**
+- **Presence modes: Companion, Focus, Builder, Guardian, Workshop and Silent**
 - **Voice input and speech output**
 - **Multi-agent engineering orchestration**
 - **Defensive personal security intelligence**
@@ -23,7 +25,7 @@ It combines:
 - **Controlled self-rewrite capabilities**
 - **Security-focused data rules and bounded automation**
 
-The goal is to make THARA feel like a persistent engineering copilot that can understand a request, route it to the appropriate specialist, verify the result, and present the outcome through a cinematic interface.
+The goal is to make THARA feel like a persistent companion that can listen, understand context, remember useful information, proactively surface what matters, help with projects, and remain user-controlled. Complex requests can still be routed to specialist engineering agents and verified before delivery.
 
 ---
 
@@ -59,6 +61,33 @@ The goal is to make THARA feel like a persistent engineering copilot that can un
               │                     │                    │
             Web/App              AI/Data            DevOps/QA
 ```
+
+---
+
+## Companion Core
+
+THARA is designed around a companion loop rather than a chat loop:
+
+```text
+PRESENCE → LISTEN → UNDERSTAND → REMEMBER → PLAN → ACT → VERIFY → RETURN TO PRESENCE
+```
+
+### Companion modes
+
+- **Companion** — natural conversation, memory and daily context
+- **Focus** — minimal interruptions while helping with a task
+- **Builder** — coding, projects, debugging and engineering agents
+- **Guardian** — defensive security and privacy assistance
+- **Workshop** — research, experiments and creative technical work
+- **Silent** — no proactive speech while permitted background services continue
+
+### Persistent memory
+
+Useful memories are stored per authenticated user in Firestore. THARA should distinguish transient conversation from durable context and never invent memories. Memory APIs are authenticated server-side.
+
+### Proactive behavior
+
+THARA can surface useful context instead of waiting for a chat message, while asking before consequential actions. Voice is the primary interaction surface; the visual HUD is a companion dashboard.
 
 ---
 
