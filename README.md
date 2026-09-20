@@ -439,6 +439,28 @@ The current self-rewrite system is a **controlled development capability**, not 
 
 ---
 
+## THARA V5 — Capability Fabric
+
+THARA V5 unifies the requested capability layers behind one authenticated capability registry and smart router:
+
+- **Intelligence** — Intelligence Core and Agent Swarm for planning, delegation, verification and synthesis.
+- **Memory** — Memory Vault and Memory Knowledge Graph for durable user-scoped context.
+- **Autonomous Builder** — Autonomous Forge and Code Repair with guarded mission/approval boundaries.
+- **Research** — Deep Research and Research Workspace for multi-source evidence workflows.
+- **Voice** — Voice Core and Voice Command Router for wake-word, speech input and speech output where supported.
+- **Multimodal** — Vision Core and Document Intelligence for supplied visual/document inputs.
+- **Security** — Sentinel Security Gateway and Tool Permission Gateway.
+- **Performance** — Latency Engine and Parallel Execution for fast-path routing, measurement and concurrent retrieval.
+- **THARA Ecosystem** — Skills SDK, Automation Core and THARA API capability surfaces.
+
+The capability dashboard is available at:
+
+`/thara`
+
+The assistant API now returns `capabilityDomains` for each request so the UI and future agents can understand which THARA subsystems were selected.
+
+---
+
 ## Roadmap
 
 ### THARA V1 — Companion Foundation
@@ -471,7 +493,11 @@ The current self-rewrite system is a **controlled development capability**, not 
 - [x] User-scoped mission API and Firestore rules
 - [x] V4 Autonomous Forge UI
 - [x] Permission model foundation
-- [ ] Tool permission manager
+- [x] Tool permission manager foundation
+- [x] THARA V5 capability fabric
+- [x] Capability-aware assistant routing
+- [x] Capability dashboard at `/thara`
+- [x] Intelligence + memory + builder + research + voice + multimodal + security + performance + ecosystem registry
 - [ ] Native Android companion
 - [ ] Low-power native wake-word engine
 - [ ] Local model fallback
