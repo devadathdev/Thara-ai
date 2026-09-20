@@ -4,3 +4,28 @@ body { margin:0; background:#030607; color:#d9fffa; font-family:ui-sans-serif,sy
 * { box-sizing:border-box; }
 .panel { background:linear-gradient(145deg,rgba(14,30,31,.88),rgba(3,9,10,.94)); border:1px solid rgba(46,230,197,.16); box-shadow:0 0 40px rgba(46,230,197,.05); }
 .glow { text-shadow:0 0 18px rgba(46,230,197,.55); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 3px solid #2EE6C5;
+  outline-offset: 3px;
+}
+
+button, input {
+  min-height: 44px;
+}
+
+@media (prefers-contrast: more) {
+  body {
+    background: #000;
+    color: #fff;
+  }
+}
