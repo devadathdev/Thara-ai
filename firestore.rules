@@ -45,6 +45,35 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+
+    match /users/{uid}/tharaTelemetry/{eventId} {
+      allow read: if own(uid);
+      allow create: if own(uid)
+        && request.resource.data.keys().hasOnly(['createdAt','event','domains','messageLength','latencyMs','success'])
+        && request.resource.data.createdAt is number
+        && request.resource.data.event is string
+        && request.resource.data.event.size() <= 100
+        && request.resource.data.domains is list
+        && request.resource.data.domains.size() <= 12
+        && request.resource.data.messageLength is number
+        && request.resource.data.messageLength <= 8000;
+      allow update, delete: if false;
+    }
+
+    match /users/{uid}/evaluations/{evaluationId} {
+      allow read: if own(uid);
+      allow create: if own(uid)
+        && request.resource.data.keys().hasOnly(['task','score','latencyMs','createdAt','model','tags'])
+        && request.resource.data.task is string
+        && request.resource.data.task.size() <= 2000
+        && request.resource.data.score is number
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 1
+        && request.resource.data.latencyMs is number
+        && request.resource.data.latencyMs >= 0;
+      allow update, delete: if false;
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }
