@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { verifyBearerToken } from "@/lib/firebase-admin";
 
-const MAX_MEMORY = 4000;
+const MAX_MEMORY = 4000;\nconst MAX_EVENT = 2000;
 
 function db() {
   return getFirestore();
@@ -76,5 +76,28 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("companion_memory_error", error);
     return NextResponse.json({ error: "Unable to save companion memory" }, { status: 502 });
+  }
+}
+
+
+export async function PUT(req: Request) {
+  try {
+    const user = await verifyBearerToken(req);
+    const body = await req.json();
+    const type = typeof body.type === "string" ? body.type.trim() : "";
+    const message = typeof body.message === "string" ? body.message.trim() : "";
+    if (!type || !message || message.length > MAX_EVENT) {
+      return NextResponse.json({ error: "Invalid companion event" }, { status: 400 });
+    }
+    await db().collection("users").doc(user.uid).collection("companionEvents").add({
+      type,
+      message,
+      createdAt: Date.now(),
+      serverRecordedAt: FieldValue.serverTimestamp(),
+    });
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("companion_event_error", error);
+    return NextResponse.json({ error: "Unable to record companion event" }, { status: 502 });
   }
 }
