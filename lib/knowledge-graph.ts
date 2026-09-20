@@ -109,3 +109,12 @@ export function relevantMemoryIds(graph:{nodes:KnowledgeNode[];edges:KnowledgeEd
   }
   return [...score.entries()].sort((a,b)=>b[1]-a[1]).slice(0,20).map(x=>x[0]);
 }
+
+
+export function buildDatasetGraph(datasets:Array<{id:string;name:string;source?:string;tags?:string[];createdAt?:number}>){
+ const nodes:KnowledgeNode[]=datasets.map(d=>({id:`dataset:${d.id}`,label:d.name,type:"concept",memoryIds:[],updatedAt:Number(d.createdAt||Date.now()),confidence:1}));
+ const edges:KnowledgeEdge[]=[]; const topics=new Map<string,string[]>();
+ for(const d of datasets) for(const t of [...(d.tags||[]),d.source||"dataset"]){const k=t.toLowerCase().replace(/[^a-z0-9_-]/g,"-"),id=`dataset-topic:${k}`;if(!topics.has(id))topics.set(id,[]);topics.get(id)!.push(d.id);}
+ for(const [id,ids] of topics){nodes.push({id,label:id.replace("dataset-topic:",""),type:"topic",memoryIds:[],updatedAt:Date.now()});for(const did of ids)edges.push({id:`dataset:${did}::${id}`,from:`dataset:${did}`,to:id,relation:"about",weight:1,memoryIds:[],updatedAt:Date.now(),confidence:1});}
+ return {nodes,edges};
+}
