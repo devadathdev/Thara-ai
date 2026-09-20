@@ -3,7 +3,7 @@ export const runtime = "nodejs";
 import { NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
 import { verifyBearerToken } from "@/lib/firebase-admin";
-import { buildKnowledgeGraph } from "@/lib/knowledge-graph";
+import { buildKnowledgeGraph, enrichKnowledgeGraph } from "@/lib/knowledge-graph";
 
 function db(){ return getFirestore(); }
 
@@ -31,7 +31,7 @@ export async function POST(req:Request){
       .orderBy("createdAt","desc").limit(200).get();
     const memories=snapshot.docs.map(d=>({id:d.id,content:String(d.data().content||""),createdAt:Number(d.data().createdAt||Date.now())}));
     const filtered=memoryIds.length?memories.filter(m=>memoryIds.includes(m.id)):memories;
-    const graph=buildKnowledgeGraph(filtered);
+    const graph=await enrichKnowledgeGraph(filtered,buildKnowledgeGraph(filtered));
     const ref=db().collection("users").doc(user.uid).collection("knowledgeGraph").doc("current");
     await ref.set({nodes:graph.nodes,edges:graph.edges,updatedAt:Date.now(),memoryCount:filtered.length});
     return NextResponse.json({ok:true,...graph},{headers:{"Cache-Control":"no-store"}});
