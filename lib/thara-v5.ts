@@ -28,7 +28,13 @@ export const THARA_CAPABILITIES: TharaCapability[] = [
   {id:"parallel-execution",name:"Parallel Execution",domain:"performance",status:"online",description:"Runs independent retrieval operations concurrently to reduce waiting.",actions:["parallelize","cache","compress"]},
   {id:"skills-sdk",name:"THARA Skills SDK",domain:"ecosystem",status:"beta",description:"Capability registry for adding bounded tools and specialist skills.",actions:["register","discover","enable"]},
   {id:"automation-core",name:"Automation Core",domain:"ecosystem",status:"guarded",description:"Mission and workflow automation with explicit control boundaries.",actions:["schedule","run","verify"]},
-  {id:"thara-api",name:"THARA API",domain:"ecosystem",status:"beta",description:"Stable internal capability surface for THARA-connected applications.",actions:["discover","invoke","observe"]}
+  {id:"thara-api",name:"THARA API",domain:"ecosystem",status:"beta",description:"Stable internal capability surface for THARA-connected applications.",actions:["discover","invoke","observe"]},
+  {id:"android-companion",name:"Native Android Companion",domain:"ecosystem",status:"beta",description:"Native Android companion shell with explicit device permissions and secure transport boundaries.",actions:["pair","sync","notify","handoff"]},
+  {id:"local-inference",name:"Local Model Fallback",domain:"performance",status:"beta",description:"Device-local inference adapter for offline or low-latency fallback before cloud routing.",actions:["probe","select","fallback","health"]},
+  {id:"native-wakeword",name:"Low-Power Wake Word",domain:"voice",status:"beta",description:"On-device wake-word boundary designed for low-power continuous listening without cloud audio streaming.",actions:["listen","detect","handoff"]},
+  {id:"sandbox-forge",name:"Sandboxed Coding",domain:"builder",status:"guarded",description:"Temporary isolated execution boundary for generated code with policy checks and explicit approval gates.",actions:["stage","execute","test","destroy"]},
+  {id:"benchmark-arena",name:"Benchmark Arena",domain:"performance",status:"beta",description:"Automated correctness and latency evaluation across repeatable benchmark suites.",actions:["run","score","compare","report"]},
+  {id:"long-term-eval",name:"Long-Term Evaluation",domain:"intelligence",status:"beta",description:"Tracks quality, latency and regression signals over time without silently changing production behavior.",actions:["record","aggregate","detect","review"]}
 ];
 
 export function capabilitySummary() {
