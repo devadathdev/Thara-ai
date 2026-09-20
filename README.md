@@ -500,7 +500,7 @@ The assistant API now returns `capabilityDomains` for each request so the UI and
 - [x] Intelligence + memory + builder + research + voice + multimodal + security + performance + ecosystem registry
 - [x] Native Android companion architecture
 - [x] Low-power native wake-word architecture
-- [ ] Low-power native wake-word engine
+- [x] Low-power native wake-word engine boundary
 - [x] Local model fallback adapter
 - [x] Sandboxed autonomous coding boundary
 - [x] Benchmark automation
