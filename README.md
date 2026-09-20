@@ -498,12 +498,29 @@ The assistant API now returns `capabilityDomains` for each request so the UI and
 - [x] Capability-aware assistant routing
 - [x] Capability dashboard at `/thara`
 - [x] Intelligence + memory + builder + research + voice + multimodal + security + performance + ecosystem registry
-- [ ] Native Android companion
+- [x] Native Android companion architecture
+- [x] Low-power native wake-word architecture
 - [ ] Low-power native wake-word engine
-- [ ] Local model fallback
-- [ ] Sandboxed autonomous coding
-- [ ] Benchmark automation
-- [ ] Long-term evaluation/learning
+- [x] Local model fallback adapter
+- [x] Sandboxed autonomous coding boundary
+- [x] Benchmark automation
+- [x] Long-term evaluation/learning signals
+
+---
+
+
+## THARA V6 — Native + Learning Fabric
+
+THARA V6 adds the next infrastructure layer:
+
+- **Native Android Companion** — Android project skeleton with a foreground companion service and permission boundary.
+- **Low-Power Native Wake Word** — on-device wake-word service boundary; production detector/model remains local and replaceable.
+- **Local Model Fallback** — adapter for offline/local inference with cloud fallback policy.
+- **Sandboxed Autonomous Coding** — temporary isolated workspace, command allow/deny policy, timeouts and output limits.
+- **Benchmark Automation** — repeatable benchmark cases with latency and correctness results.
+- **Long-Term Evaluation/Learning** — persistent evaluation records can be aggregated into quality/latency learning signals.
+
+These capabilities are deliberately **guarded**: THARA does not silently gain unrestricted device, shell, microphone, deployment or self-modification authority. High-impact actions remain subject to explicit permissions and verification.
 
 ---
 
