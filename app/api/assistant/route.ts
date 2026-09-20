@@ -13,7 +13,6 @@ import { getLanguage } from "@/lib/languages";
 import { detectLanguage } from "@/lib/language-detection";
 import { retrieveDatasets, datasetContext } from "@/lib/datasets/retrieval";
 import { routeCapability } from "@/lib/thara-v5";
-import { routeCapability } from "@/lib/thara-v5";
 
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 30;
@@ -57,7 +56,6 @@ export async function POST(req: Request) {
     const relevantDatasets=needsData?retrieveDatasets(datasets,message,4):[];
     const datasetContextText=needsData?datasetContext(relevantDatasets):"";
     const threats=analyzeThreat(message);
-    const capabilityDomains=routeCapability(message);
     const team=ENGINEERING_TEAM.map(x=>`${x.name} (${x.domain})`).join(", ");
     const system=`You are THARA, a private personal AI with a multi-agent engineering team.
 Authenticated user id: ${user.uid}
