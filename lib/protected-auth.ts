@@ -12,8 +12,10 @@ export function isProtectedArea(value: unknown): value is ProtectedArea {
   return typeof value === "string" && (PROTECTED_AREAS as readonly string[]).includes(value);
 }
 
-export function requireLineClearProof(request: Request, area: ProtectedArea) {
-  const proof = request.headers.get("x-thara-line-clear");
-  if (proof !== "verified") throw new Error(`Fingerprint Line Clear authentication required for ${area}`);
+export function requireLineClearProof(request: Request, area: ProtectedArea, uid: string) {
+  const proof = request.headers.get("x-thara-line-clear") || "";
+  if (proof === "verified") throw new Error("Legacy Line Clear proof rejected");
+  const { verifyLineClearToken } = require("./line-clear") as typeof import("./line-clear");
+  if (!verifyLineClearToken(proof, uid, area)) throw new Error(`Fingerprint Line Clear authentication required for ${area}`);
   return { method:"fingerprint-line-clear" as const, area, verifiedAt:Date.now(), assurance:"strong" as const };
 }
