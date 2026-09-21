@@ -15,7 +15,7 @@ export async function POST(req:Request){
     const user=await verifyBearerToken(req);
     const body=await req.json();
     if(body.approval!==true) return NextResponse.json({error:"Explicit equipment-control approval is required."},{status:403});
-    requireLineClearProof(req,"equipment-control");
+    requireLineClearProof(req,"equipment-control",user.uid);
     const command=validateEquipmentCommand(body);
     return NextResponse.json({
       ok:true,
