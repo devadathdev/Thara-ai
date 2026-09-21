@@ -74,6 +74,20 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    match /users/{uid}/engineeringRuns/{runId} {
+      allow read: if own(uid);
+      allow create: if own(uid)
+        && request.resource.data.keys().hasOnly(['tool','status','exitCode','durationMs','createdAt','datasets','metrics'])
+        && request.resource.data.tool is string
+        && request.resource.data.status in ['completed','failed','not-installed']
+        && request.resource.data.exitCode is number
+        && request.resource.data.durationMs is number
+        && request.resource.data.createdAt is number
+        && request.resource.data.datasets is list
+        && request.resource.data.datasets.size() <= 8;
+      allow update, delete: if false;
+    }
+
     match /{document=**} { allow read, write: if false; }
   }
 }
