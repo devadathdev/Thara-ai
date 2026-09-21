@@ -12,7 +12,7 @@ export async function POST(req:Request){
     const user=await verifyBearerToken(req);
     const body=await req.json();
     if(body.approval!==true) return NextResponse.json({error:"Explicit engineering execution approval is required."},{status:403});
-    requireLineClearProof(req,"engineering-execution");
+    requireLineClearProof(req,"engineering-execution",user.uid);
     const engine=typeof body.engine==="string"?body.engine as SupportedEngine:null;
     if(!engine||!engines.has(engine)) return NextResponse.json({error:"Unsupported engine"},{status:400});
     const filename=typeof body.filename==="string"?body.filename:"input.txt";
