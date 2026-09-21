@@ -641,9 +641,11 @@ The command-center implementation lives in `app/thara/page.tsx`, with the futuri
 
 THARA is being implemented in a strict dependency order. Each layer is established before expanding into the next.
 
-### ① Agent Orchestrator + Tool System — IMPLEMENTED
+### ① Agent Orchestrator + Tool System — EXECUTION LEVEL
 
 This gives THARA actual, bounded agency.
+
+Implemented execution path: OBJECTIVE → SAFETY CHECK → PLAN → ROUTE → TOOL → RESULT → TELEMETRY
 
 - Agent Orchestrator
 - Tool registry and tool metadata
@@ -657,7 +659,7 @@ This gives THARA actual, bounded agency.
 
 **Flow:** `OBJECTIVE → PLAN → ROUTE → TOOL → OBSERVE`
 
-### ② Verification + Security + Sandbox — IMPLEMENTED
+### ② Verification + Security + Sandbox — EXECUTION LEVEL
 
 This makes THARA's agency reliable instead of dangerous or unpredictable.
 
@@ -677,7 +679,7 @@ This makes THARA's agency reliable instead of dangerous or unpredictable.
 
 High-impact actions remain gated. The agent does not receive unrestricted machine, production or security-control authority.
 
-### ③ Multimodal Perception + Physical-World Interfaces + Holographic Command Center — FOUNDATION IMPLEMENTED
+### ③ Multimodal Perception + Physical-World Interfaces + Holographic Command Center — EXECUTION-READY FOUNDATION
 
 This expands THARA from a software agent toward an AI operating system.
 
@@ -702,3 +704,14 @@ This expands THARA from a software agent toward an AI operating system.
 `① AGENCY → ② SAFETY → ③ PERCEPTION + PHYSICAL-WORLD ORCHESTRATION`
 
 The order is intentional: THARA first gains bounded agency, then establishes verification/security/sandbox controls, and only then expands that controlled agency into multimodal perception and physical-world interfaces.
+
+
+## Execution-Level Policy
+
+The capability registry distinguishes:
+
+- **MASTER** — implemented and directly executable through a bounded software path.
+- **EXECUTION-READY** — an implementation path exists but requires approval, verification and/or sandbox controls.
+- **FOUNDATION** — architecture exists, but direct execution remains disabled until the real integration is implemented.
+
+THARA does not claim physical-world execution merely because an interface exists. Industrial, robotics, deployment, security-control and other high-impact integrations remain behind their actual gateway, authentication, approval and safety boundaries.
