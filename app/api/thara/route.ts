@@ -5,6 +5,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { ENGINEERING_TOOLS, ENGINEERING_WORKFLOWS, engineeringToolSummary, routeEngineering } from "@/lib/engineering";
 import { planEngineeringMission } from "@/lib/engineering-planner";
 import { allTharaCapabilities, completeCapabilitySummary } from "@/lib/thara-complete";
+import { allTharaCapabilities, completeCapabilitySummary } from "@/lib/thara-complete";
 
 export const runtime = "nodejs";
 
