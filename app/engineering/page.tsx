@@ -1,4 +1,4 @@
-"use client";
+"use client";\nimport {LineClearGate} from "@/app/components/line-clear-gate";
 
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/firebase";
@@ -13,7 +13,7 @@ export default function EngineeringWorkbench(){
   const [data,setData]=useState<Data|null>(null);
   const [query,setQuery]=useState("");
   const [mission,setMission]=useState<any>(null);
-  const [busy,setBusy]=useState(false);
+  const [busy,setBusy]=useState(false); const [lineClear,setLineClear]=useState("");
 
   async function token(){ let u=auth.currentUser; if(!u) u=(await signInAnonymously(auth)).user; return u.getIdToken(); }
 
@@ -22,7 +22,7 @@ export default function EngineeringWorkbench(){
   async function plan(){
     if(!query.trim()) return;
     setBusy(true);
-    try{const t=await token();const r=await fetch("/api/engineering",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+t},body:JSON.stringify({message:query})});setMission(await r.json())}finally{setBusy(false)}
+    try{const t=await token();const r=await fetch("/api/engineering",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+t,"x-thara-line-clear":lineClear},body:JSON.stringify({message:query})});setMission(await r.json())}finally{setBusy(false)}
   }
 
   return <main className="min-h-screen bg-[#020506] text-[#d9fffa] p-5 md:p-10">
@@ -35,7 +35,7 @@ export default function EngineeringWorkbench(){
         </div>
       </header>
 
-      <section className="mt-5 glass rounded-[28px] p-5">
+      <section className="mt-5"><LineClearGate area="engineering-execution" onVerified={setLineClear}/></section><section className="mt-5 glass rounded-[28px] p-5">
         <div className="text-[10px] tracking-widest text-teal-300">MISSION PLANNER</div>
         <div className="mt-3 flex flex-col gap-2 md:flex-row">
           <input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&plan()} placeholder="e.g. Design a bracket, run FEA, prepare CNC and connect its production telemetry…" className="thara-input flex-1 rounded-2xl px-4"/>
