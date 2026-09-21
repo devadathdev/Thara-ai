@@ -1,4 +1,5 @@
 import { getTool, listTools, type ToolRisk } from "@/lib/agent-tools";
+import { verifyMissionObjective, verifyToolAction } from "@/lib/verification";
 
 export type MissionStep={id:string;toolId:string;input:Record<string,unknown>;risk:ToolRisk;status:"planned"|"blocked"|"completed"|"failed";output?:Record<string,unknown>;error?:string};
 export type MissionPlan={id:string;objective:string;steps:MissionStep[];requiresApproval:boolean;status:"planned"|"completed"|"partially-completed"};
@@ -7,6 +8,7 @@ function missionId(){return `mission-${Date.now()}-${Math.random().toString(36).
 
 export function planMission(objective:string):MissionPlan{
  const text=objective.trim(); if(!text||text.length>4000) throw new Error("Objective must be 1–4000 characters");
+ const objectiveCheck=verifyMissionObjective(text); if(!objectiveCheck.allowed) throw new Error(objectiveCheck.reason||"Objective rejected");
  const router=getTool("capability-router"), inspector=getTool("mission-inspector");
  if(!router||!inspector) throw new Error("Core orchestration tools are unavailable");
  return {id:missionId(),objective:text,steps:[
@@ -20,7 +22,8 @@ export async function executeMission(plan:MissionPlan){
  for(const step of steps){
   const tool=getTool(step.toolId);
   if(!tool){step.status="failed";step.error="Tool unavailable";continue}
-  if(tool.risk!=="safe"){step.status="blocked";step.error="Approval/protected execution is required for this tool";plan.requiresApproval=true;continue}
+  const gate=verifyToolAction(tool.risk,{approved:false,sandboxed:false,lineClear:false});
+  if(!gate.allowed){step.status="blocked";step.error=gate.reason||"Verification gate blocked execution";plan.requiresApproval=gate.requiresApproval||plan.requiresApproval;continue}
   try{step.output=await tool.run(step.input);step.status="completed"}
   catch(error){step.status="failed";step.error=error instanceof Error?error.message:"Tool execution failed"}
  }
