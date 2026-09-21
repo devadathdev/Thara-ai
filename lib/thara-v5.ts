@@ -3,7 +3,7 @@ import { getFirestore } from "firebase-admin/firestore";
 export type TharaCapability = {
   id: string;
   name: string;
-  domain: "intelligence"|"memory"|"builder"|"research"|"voice"|"multimodal"|"security"|"performance"|"ecosystem";
+  domain: "intelligence"|"memory"|"builder"|"research"|"voice"|"multimodal"|"security"|"performance"|"ecosystem"|"engineering";
   status: "online"|"guarded"|"beta";
   description: string;
   actions: string[];
@@ -35,6 +35,11 @@ export const THARA_CAPABILITIES: TharaCapability[] = [
   {id:"sandbox-forge",name:"Sandboxed Coding",domain:"builder",status:"guarded",description:"Temporary isolated execution boundary for generated code with policy checks and explicit approval gates.",actions:["stage","execute","test","destroy"]},
   {id:"benchmark-arena",name:"Benchmark Arena",domain:"performance",status:"beta",description:"Automated correctness and latency evaluation across repeatable benchmark suites.",actions:["run","score","compare","report"]},
   {id:"long-term-eval",name:"Long-Term Evaluation",domain:"intelligence",status:"beta",description:"Tracks quality, latency and regression signals over time without silently changing production behavior.",actions:["record","aggregate","detect","review"]}
+
+  {id:"cad-engineering",name:"CAD Engineering Fabric",domain:"engineering",status:"beta",description:"CAD workflow registry for parametric modeling, assemblies, drawings and engineering interchange.",actions:["model","assemble","draw","export"]},
+  {id:"cae-simulation",name:"CAE Simulation Fabric",domain:"engineering",status:"beta",description:"CAE workflow registry for FEA, CFD, thermal, multiphysics and meshing workflows.",actions:["mesh","simulate","analyze","optimize"]},
+  {id:"manufacturing-fabric",name:"Manufacturing Fabric",domain:"engineering",status:"beta",description:"CAM, CNC, electronics, process planning, quality and design-for-manufacturing workflows.",actions:["plan","toolpath","manufacture","inspect"]},
+  {id:"industry4-fabric",name:"Industry 4.0 Fabric",domain:"engineering",status:"beta",description:"Industrial connectivity, IIoT, digital twins, MES, OEE, traceability and predictive-maintenance workflows.",actions:["connect","telemetry","twin","optimize"]},
 ];
 
 export function capabilitySummary() {
