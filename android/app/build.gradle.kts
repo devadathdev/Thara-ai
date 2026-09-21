@@ -11,3 +11,9 @@ android {
         versionName="0.2.0"
     }
 }
+
+dependencies {
+    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.9")
+}
