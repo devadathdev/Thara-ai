@@ -637,3 +637,67 @@ The UI remains a **control and orchestration surface**, not an unrestricted auth
 
 The command-center implementation lives in `app/thara/page.tsx`, with the futuristic blue technical visual system defined in `app/globals.css`.
 
+
+
+## THARA Capability Build Order
+
+THARA's next-generation architecture is organized in the following order so that increasing autonomy is built on progressively stronger safety and perception foundations.
+
+### ① Agent Orchestrator + Tool System
+
+This layer gives THARA **actual agency**.
+
+- Agent orchestration and task decomposition
+- Tool registry and capability routing
+- Multi-step planning and execution
+- Tool permissions and scoped credentials
+- Agent state and task lifecycle management
+- Parallel and sequential tool execution
+- Human approval checkpoints for sensitive actions
+- Execution tracing and audit events
+
+**Goal:** move THARA from a conversational assistant toward an agent that can reliably plan and carry out bounded tasks.
+
+### ② Verification + Security + Sandbox
+
+This layer makes THARA's agency **reliable instead of dangerous or unpredictable**.
+
+- Verification gates before consequential actions
+- Sandboxed code and tool execution
+- Prompt-injection defense
+- Permission gateway
+- Secret and credential protection
+- Dependency and artifact security checks
+- Output validation and policy checks
+- Regression and benchmark evaluation
+- Fingerprint Line Clear authentication for protected operations
+- Audit ledger and execution telemetry
+- Explicit boundaries around physical-world and production actions
+
+**Goal:** every autonomous action should pass the appropriate authorization, verification, isolation and observability boundaries before execution.
+
+### ③ Multimodal Perception + Physical-World Interfaces + Holographic Command Center
+
+This layer turns THARA from a software agent into a broader **AI operating system**.
+
+- Vision and document perception
+- OCR and visual understanding
+- Audio and video intelligence
+- 3D and spatial understanding
+- Robotics and ROS2 interfaces
+- IoT, device and equipment interfaces
+- Digital twins and Industry 4.0 connectivity
+- CAD/CAE/CAM engineering workflows
+- Physical-world telemetry and state awareness
+- Holographic-style command center
+- Spatial mission visualization
+- Real-time capability, agent and system-state visualization
+
+**Goal:** give THARA the perception and interfaces required to understand and coordinate across software, data, devices, engineering systems and physical environments.
+
+### Architectural progression
+
+`AGENCY → SAFETY → PERCEPTION → PHYSICAL-WORLD ORCHESTRATION`
+
+The order is intentional: THARA should gain the ability to act first, establish strong verification and security boundaries before expanding autonomy, and then connect those bounded capabilities to multimodal perception and physical-world systems.
+
