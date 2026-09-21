@@ -213,7 +213,7 @@ export const THARA_COMPLETE_CAPABILITIES: TharaExpansionCapability[] = [
   ["multilingual","Multilingual Core","experience","online","Language detection and multilingual interaction.",["detect","translate","speak"]],
   ["personalization","Adaptive Personality","experience","beta","User-configurable response style and interaction preferences.",["learn","adapt","apply"]],
   ["xr-interface","AR/VR Interface","experience","planned","Immersive interface boundary for spatial engineering and digital twins.",["view","interact","simulate"]]
-].map(([id,name,domain,status,description,actions])=>({id,name,domain,status,description,actions,execution:executionFor(id,status)} as TharaExpansionCapability));
+].map(([id,name,domain,status,description,actions])=>({id,name,domain,status,description,actions,execution:executionFor(String(id),status as TharaExpansionStatus)} as TharaExpansionCapability));
 
 export function completeCapabilitySummary() {
   return THARA_COMPLETE_CAPABILITIES.reduce<Record<string,number>>((out,c)=>{
