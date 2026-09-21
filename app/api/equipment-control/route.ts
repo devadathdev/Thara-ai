@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyBearerToken } from "@/lib/firebase-admin";
 import { equipmentControlCapabilities, validateEquipmentCommand } from "@/lib/equipment-control";
+import { requireLineClearProof } from "@/lib/protected-auth";
 
 export const runtime="nodejs";
 
@@ -14,6 +15,7 @@ export async function POST(req:Request){
     const user=await verifyBearerToken(req);
     const body=await req.json();
     if(body.approval!==true) return NextResponse.json({error:"Explicit equipment-control approval is required."},{status:403});
+    requireLineClearProof(req,"equipment-control");
     const command=validateEquipmentCommand(body);
     return NextResponse.json({
       ok:true,
