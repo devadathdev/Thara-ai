@@ -1,4 +1,4 @@
-# THARA AI
+# THARA
 
 > **THARA** — a personal AI command center designed for voice-first interaction, engineering workflows, defensive security, and controlled self-improvement.
 
