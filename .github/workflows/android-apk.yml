@@ -28,12 +28,12 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install Android SDK components
-        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+        run: sdkmanager "platform-tools" "platforms;android-37" "build-tools;36.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.13"
+          gradle-version: "9.6.1"
 
       - name: Build debug APK
         working-directory: android
@@ -62,5 +62,9 @@ jobs:
           if gh release view thara-android-latest >/dev/null 2>&1; then
             gh release upload thara-android-latest "$APK" /tmp/thara-ai-debug.apk.sha256 --clobber
           else
-            gh release create thara-android-latest "$APK" /tmp/thara-ai-debug.apk.sha256               --title "THARA AI Android — Latest"               --notes "Automated THARA Android companion debug APK built from main. For testing/development."               --prerelease               --target "${GITHUB_SHA}"
+            gh release create thara-android-latest "$APK" /tmp/thara-ai-debug.apk.sha256 \
+              --title "THARA AI Android — Latest" \
+              --notes "Automated THARA Android companion debug APK built from main. For testing/development." \
+              --prerelease \
+              --target "${GITHUB_SHA}"
           fi
