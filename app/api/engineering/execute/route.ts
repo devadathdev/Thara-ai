@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyBearerToken } from "@/lib/firebase-admin";
 import { executePreparedEngineeringCommand, type SupportedEngine } from "@/lib/engineering-execution";
+import { requireLineClearProof } from "@/lib/protected-auth";
 
 export const runtime = "nodejs";
 
@@ -11,6 +12,7 @@ export async function POST(req:Request){
     const user=await verifyBearerToken(req);
     const body=await req.json();
     if(body.approval!==true) return NextResponse.json({error:"Explicit engineering execution approval is required."},{status:403});
+    requireLineClearProof(req,"engineering-execution");
     const engine=typeof body.engine==="string"?body.engine as SupportedEngine:null;
     if(!engine||!engines.has(engine)) return NextResponse.json({error:"Unsupported engine"},{status:400});
     const filename=typeof body.filename==="string"?body.filename:"input.txt";
