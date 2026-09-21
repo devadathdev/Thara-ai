@@ -637,67 +637,68 @@ The UI remains a **control and orchestration surface**, not an unrestricted auth
 
 The command-center implementation lives in `app/thara/page.tsx`, with the futuristic blue technical visual system defined in `app/globals.css`.
 
-
-
 ## THARA Capability Build Order
 
-THARA's next-generation architecture is organized in the following order so that increasing autonomy is built on progressively stronger safety and perception foundations.
+THARA is being implemented in a strict dependency order. Each layer is established before expanding into the next.
 
-### ① Agent Orchestrator + Tool System
+### ① Agent Orchestrator + Tool System — IMPLEMENTED
 
-This layer gives THARA **actual agency**.
+This gives THARA actual, bounded agency.
 
-- Agent orchestration and task decomposition
-- Tool registry and capability routing
-- Multi-step planning and execution
-- Tool permissions and scoped credentials
-- Agent state and task lifecycle management
-- Parallel and sequential tool execution
-- Human approval checkpoints for sensitive actions
-- Execution tracing and audit events
+- Agent Orchestrator
+- Tool registry and tool metadata
+- Mission planning
+- Capability routing
+- Tool risk classification: safe / approval / protected
+- Multi-step mission lifecycle
+- Execution tracing and telemetry
+- `/api/agent` orchestration endpoint
+- Core tools: Capability Router and Mission Inspector
 
-**Goal:** move THARA from a conversational assistant toward an agent that can reliably plan and carry out bounded tasks.
+**Flow:** `OBJECTIVE → PLAN → ROUTE → TOOL → OBSERVE`
 
-### ② Verification + Security + Sandbox
+### ② Verification + Security + Sandbox — IMPLEMENTED
 
-This layer makes THARA's agency **reliable instead of dangerous or unpredictable**.
+This makes THARA's agency reliable instead of dangerous or unpredictable.
 
-- Verification gates before consequential actions
-- Sandboxed code and tool execution
+- Objective safety verification
+- Tool-level verification gates
+- Approval boundaries
+- Protected-operation boundaries
+- Sandboxed code execution
 - Prompt-injection defense
 - Permission gateway
-- Secret and credential protection
-- Dependency and artifact security checks
-- Output validation and policy checks
-- Regression and benchmark evaluation
-- Fingerprint Line Clear authentication for protected operations
-- Audit ledger and execution telemetry
-- Explicit boundaries around physical-world and production actions
+- Secret scanning
+- Fingerprint Line Clear authentication
+- Engineering execution boundaries
+- Telemetry and audit events
 
-**Goal:** every autonomous action should pass the appropriate authorization, verification, isolation and observability boundaries before execution.
+**Flow:** `VERIFY → AUTHORIZE → ISOLATE → EXECUTE → AUDIT`
 
-### ③ Multimodal Perception + Physical-World Interfaces + Holographic Command Center
+High-impact actions remain gated. The agent does not receive unrestricted machine, production or security-control authority.
 
-This layer turns THARA from a software agent into a broader **AI operating system**.
+### ③ Multimodal Perception + Physical-World Interfaces + Holographic Command Center — FOUNDATION IMPLEMENTED
 
-- Vision and document perception
-- OCR and visual understanding
-- Audio and video intelligence
-- 3D and spatial understanding
-- Robotics and ROS2 interfaces
-- IoT, device and equipment interfaces
-- Digital twins and Industry 4.0 connectivity
-- CAD/CAE/CAM engineering workflows
-- Physical-world telemetry and state awareness
-- Holographic-style command center
-- Spatial mission visualization
-- Real-time capability, agent and system-state visualization
+This expands THARA from a software agent toward an AI operating system.
 
-**Goal:** give THARA the perception and interfaces required to understand and coordinate across software, data, devices, engineering systems and physical environments.
+- Image, document, audio, video and 3D perception pipeline definitions
+- `/api/perception` authenticated perception endpoint
+- Vision Core
+- Document Intelligence / OCR
+- Audio and video intelligence foundations
+- 3D/spatial understanding foundation
+- Physical-world interface architecture
+- Robotics / ROS2 capability layer
+- OPC UA / MQTT / Sparkplug / Modbus interfaces
+- Digital Twin / MES / OEE / factory telemetry foundations
+- CAD / CAE / CAM engineering interfaces
+- THARA technical holographic-style command center at `/thara`
+- Capability Matrix, Mission Console, Engineering, Sentinel and Telemetry surfaces
+
+**Flow:** `PERCEIVE → UNDERSTAND → PLAN → VERIFY → INTERFACE → OBSERVE`
 
 ### Architectural progression
 
-`AGENCY → SAFETY → PERCEPTION → PHYSICAL-WORLD ORCHESTRATION`
+`① AGENCY → ② SAFETY → ③ PERCEPTION + PHYSICAL-WORLD ORCHESTRATION`
 
-The order is intentional: THARA should gain the ability to act first, establish strong verification and security boundaries before expanding autonomy, and then connect those bounded capabilities to multimodal perception and physical-world systems.
-
+The order is intentional: THARA first gains bounded agency, then establishes verification/security/sandbox controls, and only then expands that controlled agency into multimodal perception and physical-world interfaces.
