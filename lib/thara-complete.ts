@@ -20,6 +20,33 @@ export type TharaExpansionCapability = {
   execution: TharaExecutionProfile;
 };
 
+
+const EXECUTABLE_CAPABILITIES = new Set([
+  "reasoning-core","agent-orchestrator","task-planner","memory-vault","semantic-memory","knowledge-graph",
+  "deep-research","voice-core","voice-command-router","sentinel","prompt-injection-defense",
+  "latency-engine","parallel-execution","model-router","dataset-hub","scientific-computing",
+  "requirements-engineering","cad-fabric","cae-fabric","optimization","manufacturing-fabric",
+  "cnc-planning","dfm-dfa","bom-costing","quality-inspection","hud-interface","accessibility",
+  "multilingual","observability","benchmark-arena","long-term-eval","android-companion",
+  "vision-core","document-intelligence","ocr-pipeline"
+]);
+
+const GUARDED_EXECUTABLE_CAPABILITIES = new Set([
+  "autonomous-forge","code-repair","repo-agent","ci-cd-orchestrator","permission-gateway",
+  "line-clear-auth","memory-encryption","device-control","system-automation","automation-core",
+  "opcua","mqtt-sparkplug","modbus","incident-response","audit-ledger"
+]);
+
+function executionFor(id: string, status: TharaExpansionStatus): TharaExecutionProfile {
+  if (EXECUTABLE_CAPABILITIES.has(id)) {
+    return { level:"master", canPlan:true, canExecute:true, requiresApproval:false, requiresVerification:true, sandboxed:false };
+  }
+  if (GUARDED_EXECUTABLE_CAPABILITIES.has(id)) {
+    return { level:"execution-ready", canPlan:true, canExecute:true, requiresApproval:true, requiresVerification:true, sandboxed:true };
+  }
+  return { level:"foundation", canPlan:true, canExecute:false, requiresApproval:true, requiresVerification:true, sandboxed:false };
+}
+
 export const THARA_COMPLETE_CAPABILITIES: TharaExpansionCapability[] = [
   // Intelligence
   ["reasoning-core","Reasoning Core","intelligence","online","Planning, synthesis, verification and structured reasoning.",["reason","plan","verify","synthesize"]],
@@ -186,7 +213,7 @@ export const THARA_COMPLETE_CAPABILITIES: TharaExpansionCapability[] = [
   ["multilingual","Multilingual Core","experience","online","Language detection and multilingual interaction.",["detect","translate","speak"]],
   ["personalization","Adaptive Personality","experience","beta","User-configurable response style and interaction preferences.",["learn","adapt","apply"]],
   ["xr-interface","AR/VR Interface","experience","planned","Immersive interface boundary for spatial engineering and digital twins.",["view","interact","simulate"]]
-].map(([id,name,domain,status,description,actions])=>({id,name,domain,status,description,actions} as TharaExpansionCapability));
+].map(([id,name,domain,status,description,actions])=>({id,name,domain,status,description,actions,execution:executionFor(id,status)} as TharaExpansionCapability));
 
 export function completeCapabilitySummary() {
   return THARA_COMPLETE_CAPABILITIES.reduce<Record<string,number>>((out,c)=>{
