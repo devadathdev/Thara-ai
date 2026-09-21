@@ -566,3 +566,37 @@ THARA V5 unifies the requested capability families behind one authenticated capa
 - THARA Skills SDK + Automation Core + THARA API
 
 The capability registry is available at `/api/thara` and the dedicated dashboard at `/thara`. Capability routing records lightweight telemetry under each user's scoped Firestore collection. Consequential automation remains guarded by explicit approval boundaries.
+
+## THARA V7 — Complete Capability Fabric
+
+THARA V7 consolidates the platform into a single capability registry. Every capability is explicitly classified as online, guarded, beta, or planned so the interface does not imply that an architecture boundary is already a production integration.
+
+### Capability domains
+
+- Intelligence: Reasoning Core, Agent Orchestrator, Task Planner, Context Engine, Decision Support, Self Reflection.
+- Memory: Memory Vault, Episodic Memory, Semantic Memory, Knowledge Graph, Memory Consolidation, Memory Encryption.
+- Builder: Autonomous Forge, Code Repair, Repository Agent, Test Generation, Dependency Audit, CI/CD Orchestrator, Artifact Packager.
+- Research: Deep Research, Research Workspace, Literature Mapping, Citation Verification, Experiment Manager, Hypothesis Engine.
+- Voice: Voice Core, Wake Word, Voice Command Router, Barge-In, Prosody Control.
+- Multimodal: Vision, Document Intelligence, OCR, Audio Intelligence, Video Intelligence, 3D Understanding.
+- Security: Sentinel, Prompt-Injection Defense, Permission Gateway, Fingerprint Line Clear Authentication, Secret Scanner, Security Audit, Incident Response.
+- Performance: Latency Engine, Parallel Execution, Semantic Cache, Adaptive Model Router, Offline Mode, Cost Router.
+- Data: Dataset Hub, Dataset Quality, PII Filtering, Data Lineage, Synthetic Data, Feature Store.
+- ML: Model Lab, RAG Forge, Model Evaluation, Fine-Tuning Pipeline, Model Registry.
+- Engineering: Requirements Engineering, CAD, Generative Design, CAE, Engineering Optimization, Surrogate Models, PLM/Digital Thread.
+- Manufacturing: CAM/CNC, DFM/DFA, BOM/Costing, Quality/Inspection, Additive Manufacturing, Electronics Engineering.
+- Industry 4.0: IIoT, OPC UA, MQTT/Sparkplug, Modbus, Digital Twin, MES, OEE, Predictive Maintenance, Factory Telemetry, Production Traceability.
+- Robotics: Robotics Orchestrator, ROS 2, Robot Simulation, Motion Planning.
+- Science: Scientific Computing, Computational Chemistry, Materials Intelligence, Nanomaterials Intelligence, Physics-Informed AI.
+- Healthcare: Healthcare Data Boundary, Clinical Literature Research, Biomedical RAG.
+- Agriculture: Agriculture Intelligence, Farm IoT.
+- Climate: Climate Intelligence.
+- Product: Project OS, Meeting Intelligence, Personal Intelligence Dashboard, Notification Engine.
+- Device: Native Android Companion, Device Control, Local File Intelligence, System Automation.
+- Ecosystem: Skills SDK, THARA API, Automation Core, Team Collaboration, Webhooks/Events.
+- Evaluation: Benchmark Arena, Long-Term Evaluation, Safety Evaluation, Observability, Audit Ledger.
+- Experience: Cinematic HUD, Accessibility, Multilingual Core, Adaptive Personality, AR/VR Interface.
+
+The canonical registry is lib/thara-complete.ts. The /api/thara capability endpoint exposes the complete registry and the /thara dashboard displays the full domain surface.
+
+Execution truth: planned capabilities are architecture targets, beta capabilities are partial/integration-stage, and guarded capabilities require explicit authorization and verification. Industrial, device, CNC and other high-impact actions remain protected from direct autonomous execution.
