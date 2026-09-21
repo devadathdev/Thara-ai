@@ -3,6 +3,7 @@ import { verifyBearerToken } from "@/lib/firebase-admin";
 import { THARA_CAPABILITIES, capabilitySummary, routeCapability, getCapabilityTelemetry } from "@/lib/thara-v5";
 import { getFirestore } from "firebase-admin/firestore";
 import { ENGINEERING_TOOLS, ENGINEERING_WORKFLOWS, engineeringToolSummary, routeEngineering } from "@/lib/engineering";
+import { planEngineeringMission } from "@/lib/engineering-planner";
 
 export const runtime = "nodejs";
 
@@ -24,10 +25,11 @@ export async function POST(req: Request) {
     if (!message || message.length > 4000) return NextResponse.json({error:"message must be 1–4000 characters"},{status:400});
     const domains = routeCapability(message);
     const engineering = routeEngineering(message);
+    const engineeringMission = planEngineeringMission(message);
     await getFirestore().collection("users").doc(user.uid).collection("tharaTelemetry").add({
       createdAt: Date.now(), event:"capability-route", domains, messageLength:message.length, success:true
     });
-    return NextResponse.json({ok:true,domains,engineering,capabilities:THARA_CAPABILITIES.filter(c=>domains.includes(c.domain))});
+    return NextResponse.json({ok:true,domains,engineering,engineeringMission,capabilities:THARA_CAPABILITIES.filter(c=>domains.includes(c.domain))});
   } catch {
     return NextResponse.json({error:"Capability service unavailable"},{status:502});
   }
