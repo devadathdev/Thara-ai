@@ -1,4 +1,14 @@
 export type TharaExpansionStatus = "online" | "guarded" | "beta" | "planned";
+export type TharaExecutionLevel = "foundation" | "execution-ready" | "master";
+
+export type TharaExecutionProfile = {
+  level: TharaExecutionLevel;
+  canPlan: boolean;
+  canExecute: boolean;
+  requiresApproval: boolean;
+  requiresVerification: boolean;
+  sandboxed: boolean;
+};
 
 export type TharaExpansionCapability = {
   id: string;
@@ -7,6 +17,7 @@ export type TharaExpansionCapability = {
   status: TharaExpansionStatus;
   description: string;
   actions: string[];
+  execution: TharaExecutionProfile;
 };
 
 export const THARA_COMPLETE_CAPABILITIES: TharaExpansionCapability[] = [
@@ -186,4 +197,19 @@ export function completeCapabilitySummary() {
 
 export function allTharaCapabilities() {
   return THARA_COMPLETE_CAPABILITIES;
+}
+
+export function getMasterCapabilities() {
+  return THARA_COMPLETE_CAPABILITIES.filter(c => c.execution.level === "master");
+}
+
+export function getExecutionReadyCapabilities() {
+  return THARA_COMPLETE_CAPABILITIES.filter(c => c.execution.level !== "foundation");
+}
+
+export function capabilityExecutionSummary() {
+  return THARA_COMPLETE_CAPABILITIES.reduce<Record<string, number>>((out, c) => {
+    out[c.execution.level] = (out[c.execution.level] ?? 0) + 1;
+    return out;
+  }, {});
 }
