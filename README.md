@@ -2,709 +2,104 @@
 
 > **THARA** — a personal AI command center designed for voice-first interaction, engineering workflows, defensive security, and controlled self-improvement.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
-[![Firebase](https://img.shields.io/badge/Firebase-12-orange?logo=firebase)](https://firebase.google.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-private-lightgrey)](#)
-
 ## What is THARA?
 
-THARA is a persistent personal AI companion built around presence, voice, memory, context and action rather than a conventional chatbot. The command center is now a secondary surface; the companion itself is the product.
+THARA is a persistent personal AI companion built around presence, voice, memory, context and controlled action rather than a conventional chatbot.
 
-It combines:
+It combines companion interaction, persistent memory, multi-agent engineering orchestration, defensive security, model routing, research, datasets, multimodal foundations, and a guarded physical-world gateway architecture.
 
-- **Companion-first interaction**
-- **Persistent personal memory and context**
-- **Presence modes: Companion, Focus, Builder, Guardian, Workshop and Silent**
-- **Voice input and speech output**
-- **Multi-agent engineering orchestration**
-- **Defensive personal security intelligence**
-- **Model routing through OpenRouter/Gemini**
-- **Holographic Workshop concepts for models, datasets and experiments**
-- **Authenticated API access**
-- **Controlled self-rewrite capabilities**
-- **Security-focused data rules and bounded automation**
+## Hardware Gateway
 
-The goal is to make THARA feel like a persistent companion that can listen, understand context, remember useful information, proactively surface what matters, help with projects, and remain user-controlled. Complex requests can still be routed to specialist engineering agents and verified before delivery.
+THARA now includes a dedicated **Hardware Gateway foundation** for connecting the AI system to external equipment without exposing the machine network directly to the web application.
 
----
+### Architecture
+
+```text
+THARA AI
+   |
+Firebase Authentication
+   |
+Fingerprint Line Clear
+   |
+Gateway API
+   |
+Secure Hardware Gateway
+   |
+Protocol Adapter
+   +-- OPC UA
+   +-- MQTT
+   +-- Sparkplug B
+   +-- Modbus
+   |
+PLC / Robot / Sensor / Machine
+   |
+Telemetry -> THARA
+```
+
+### Gateway capabilities
+
+- Device registration
+- Protocol abstraction
+- Gateway command IDs
+- Read/write/start/stop/pause/reset operations
+- Explicit operator approval
+- Fingerprint Line Clear protection
+- Simulation-first operation
+- Adapter boundary for physical execution
+- Future telemetry correlation
+- Physical execution blocked until a real adapter is installed
+
+The implementation lives in:
+
+- `lib/hardware-gateway.ts`
+- `app/api/gateway/route.ts`
+- `gateway/README.md`
+
+### Safety boundary
+
+The gateway defaults to **simulation mode**. The web application does not directly send machine commands.
+
+Physical execution requires:
+
+1. An authenticated gateway host.
+2. A real protocol adapter.
+3. Explicit approval.
+4. Fingerprint Line Clear verification.
+5. Local gateway safety policy.
+6. Audit and command correlation.
+7. Verified telemetry/response handling.
+
+The gateway therefore provides the connection point needed for future laptop/industrial-PC integration without falsely claiming that a physical machine has been controlled.
 
 ## Core Architecture
 
 ```text
-                         ┌─────────────────────┐
-                         │      THARA UI       │
-                         │  Command Center     │
-                         └──────────┬──────────┘
-                                    │
-                  ┌─────────────────┼─────────────────┐
-                  │                 │                 │
-             Voice I/O        Command Router      Security
-                  │                 │                 │
-                  └─────────────────┼─────────────────┘
-                                    │
-                         ┌──────────▼──────────┐
-                         │   Assistant API     │
-                         │ Firebase Auth       │
-                         │ Rate Limiting       │
-                         └──────────┬──────────┘
-                                    │
-                     ┌──────────────┼──────────────┐
-                     │              │              │
-                Model Router   Engineering Team  Sentinel
-                     │              │              │
-              ┌──────┴──────┐       │              │
-              │             │       │              │
-          OpenRouter      Gemini   Specialists   Threat AI
-                                    │
-              ┌─────────────────────┼────────────────────┐
-              │                     │                    │
-            Web/App              AI/Data            DevOps/QA
+THARA UI
+   |
+Command / Voice / Multimodal
+   |
+Assistant API
+   |
+Agent Orchestrator
+   |
+Verification + Permission Gateway
+   |
++-------------------------------+
+| Software Tools | HW Gateway   |
++-------------------------------+
+   |                 |
+Cloud/Local AI       |
+Research/Data        |
+Engineering          +--> OPC UA / MQTT / Sparkplug / Modbus
+   |                              |
+Telemetry <-----------------------+
 ```
 
----
+## Security Architecture
 
-## Companion Core
+THARA uses authenticated APIs, server-side provider credentials, scoped Firestore access, rate limiting, prompt-injection defenses, bounded self-rewrite, sandboxed execution, and Fingerprint Line Clear protection for protected operations.
 
-THARA is designed around a companion loop rather than a chat loop:
-
-```text
-PRESENCE → LISTEN → UNDERSTAND → REMEMBER → PLAN → ACT → VERIFY → RETURN TO PRESENCE
-```
-
-### Companion modes
-
-- **Companion** — natural conversation, memory and daily context
-- **Focus** — minimal interruptions while helping with a task
-- **Builder** — coding, projects, debugging and engineering agents
-- **Guardian** — defensive security and privacy assistance
-- **Workshop** — research, experiments and creative technical work
-- **Silent** — no proactive speech while permitted background services continue
-
-### Persistent memory
-
-Useful memories are stored per authenticated user in Firestore. THARA should distinguish transient conversation from durable context and never invent memories. Memory APIs are authenticated server-side.
-
-### Proactive behavior
-
-THARA can surface useful context instead of waiting for a chat message, while asking before consequential actions. Voice is the primary interaction surface; the visual HUD is a companion dashboard.
-
----
-
-## JARVIS-Style Features
-
-### 🎙️ Voice Command Layer
-
-THARA supports browser-based voice interaction where available.
-
-Example:
-
-> "THARA, explain this error."
-
-The assistant can transcribe the command, process it, and speak the response using browser speech synthesis.
-
-Voice capabilities depend on browser/device support.
-
-### 🧠 Command Core
-
-THARA is designed around commands such as:
-
-```text
-Explain this error
-Build a Next.js application
-Analyze this suspicious message
-Plan my project
-Design an AI architecture
-Review my code
-Run a security analysis
-```
-
-The command layer can route requests to the appropriate engineering/security context.
-
-### 👨‍💻 Engineering Team
-
-THARA includes a bounded engineering-team architecture:
-
-| Specialist | Responsibility |
-|---|---|
-| Chief Architect | System architecture and planning |
-| Web Engineer | Next.js, React and UI |
-| App Engineer | Mobile application workflows |
-| Backend Engineer | APIs, Firebase and data services |
-| AI/ML Engineer | Models, RAG and evaluation |
-| Data Engineer | Pipelines and datasets |
-| Defensive Security Engineer | Hardening and threat analysis |
-| DevOps/SRE Engineer | Infrastructure and deployment |
-| QA/Verification Engineer | Testing and regression |
-| Research Engineer | Experiments and benchmarks |
-| Product Engineer | Requirements and UX |
-
-The orchestration pattern is:
-
-```text
-DECOMPOSE → DELEGATE → VERIFY → SYNTHESIZE
-```
-
-Agents are intentionally not given unrestricted shell or network authority.
-
----
-
-## 🛡️ Sentinel Security AI
-
-Sentinel is the defensive security layer inside THARA.
-
-It can identify signals related to:
-
-- Credential/API-key exposure
-- Phishing
-- Suspicious payment/account messages
-- Malware indicators
-- Ransomware indicators
-- Keyloggers and information stealers
-
-It provides defensive recommendations such as:
-
-- Credential rotation
-- MFA/passkeys
-- Patch management
-- Least privilege
-- Encrypted backups
-- Authentication/event monitoring
-- Isolation and incident-response steps when appropriate
-
-THARA is designed for **defensive security**, not uncontrolled offensive automation.
-
----
-
-## 🔐 Security Architecture
-
-### Firebase Authentication
-
-Assistant API requests require a verified Firebase ID token.
-
-The server derives the user identity from the verified token rather than trusting a client-supplied UID.
-
-### Rate Limiting
-
-The assistant endpoint has a per-user request limit to reduce abuse.
-
-> Production multi-instance deployments should replace the in-memory limiter with a distributed store such as Redis/Upstash or an equivalent service.
-
-### Firestore Rules
-
-Firestore access is explicitly scoped to the authenticated user's own documents.
-
-The rules reject unexpected document paths and restrict writable fields.
-
-### Server-Side API Keys
-
-Provider credentials must remain server-side.
-
-Do **not** use:
-
-```text
-NEXT_PUBLIC_OPENROUTER_API_KEY
-NEXT_PUBLIC_GEMINI_API_KEY
-```
-
-Use:
-
-```text
-OPENROUTER_API_KEY
-GEMINI_API_KEY
-```
-
-### AES-256-GCM
-
-THARA includes an AES-256-GCM helper for application-level encryption.
-
-The encryption key must be exactly 32 random bytes encoded as base64 and kept server-side.
-
-### TLS 1.3
-
-TLS is provided by the hosting/network layer. THARA should be deployed behind HTTPS with modern TLS configuration.
-
----
-
-## ♻️ Controlled Self-Rewrite
-
-THARA supports an explicit self-rewrite command:
-
-```text
-THARA, REWRITE YOUR OWN CODE
-```
-
-This is intentionally **bounded**, not unrestricted autonomous code mutation.
-
-The rewrite layer:
-
-1. Requires authenticated access.
-2. Requires the exact authorization command.
-3. Applies a cooldown/rate limit.
-4. Exposes only an allowlisted set of source files.
-5. Blocks secrets and environment files.
-6. Blocks package/dependency manifests.
-7. Blocks authentication/security-policy files.
-8. Creates a backup before modification.
-9. Rolls back files when the write transaction fails.
-10. Requires structured model output.
-
-### Current rewrite principle
-
-```text
-USER AUTHORIZATION
-        ↓
-BOUNDED SOURCE CONTEXT
-        ↓
-MODEL PROPOSES PATCH
-        ↓
-ALLOWLIST VALIDATION
-        ↓
-BACKUP
-        ↓
-APPLY
-        ↓
-VERIFY / ROLLBACK ON FAILURE
-```
-
-For production, add automated tests, static analysis, signed commits, human approval, and isolated build verification before allowing generated changes to reach deployment.
-
----
-
-## 🧪 Holographic Workshop
-
-The Workshop is the experimental R&D area of THARA.
-
-Current interface concepts include:
-
-- Dataset Lab
-- Model Lab
-- RAG Forge
-- Benchmark Arena
-- Prompt Lab
-- Agent Graph
-- Vision Lab
-- Security Lab
-
-These are designed to become connectors to real datasets, models, evaluation systems and experiments.
-
----
-
-## 🤖 Model Routing
-
-THARA supports server-side provider routing through OpenRouter and Gemini, with role-specific model configuration for orchestration, general tasks, coding and reasoning.
-
-Example configuration:
-
-~~~env
-OPENROUTER_API_KEY=
-OPENROUTER_ORCHESTRATOR_MODEL=
-OPENROUTER_GENERAL_MODEL=openrouter/free
-OPENROUTER_CODING_MODEL=openrouter/free
-OPENROUTER_REASONING_MODEL=openrouter/free
-GEMINI_API_KEY=
-GEMINI_MODEL=gemini-3.1-flash-lite
-TAVILY_API_KEY=
-HUGGINGFACE_API_TOKEN=
-~~~
-
----
-
-## 🚀 Getting Started
-
-### Requirements
-
-- Node.js **20.9+**
-- npm
-- Firebase project
-- Firebase Authentication
-- Firestore
-- OpenRouter and/or Gemini API credentials
-
-### Install
-
-```bash
-git clone https://github.com/devadathdev/Thara-ai.git
-cd Thara-ai
-
-npm install
-```
-
-### Environment
-
-Copy the example configuration:
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in the Firebase, model-provider and server-side security variables.
-
-Never commit `.env.local`.
-
-### Development
-
-```bash
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:3000
-```
-
-### Production build
-
-```bash
-npm run build
-npm start
-```
-
-If dependency installation is slow on a constrained Termux/ARM environment, allow npm enough time to complete and check Node/npm versions first:
-
-```bash
-node --version
-npm --version
-```
-
----
-
-## 📁 Project Structure
-
-~~~text
-THARA AI
-├── app/
-│   ├── api/
-│   │   ├── assistant/
-│   │   ├── companion/
-│   │   ├── datasets/
-│   │   │   ├── search/
-│   │   │   └── ingest/
-│   │   ├── knowledge-graph/
-│   │   ├── research/
-│   │   ├── self-rewrite/
-│   │   └── web/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── lib/
-│   ├── datasets/
-│   │   ├── providers.ts
-│   │   └── retrieval.ts
-│   ├── assistant.ts
-│   ├── companion.ts
-│   ├── dataset-hub.ts
-│   ├── knowledge-graph.ts
-│   ├── language-detection.ts
-│   ├── languages.ts
-│   ├── model-router.ts
-│   ├── research.ts
-│   ├── security-agent.ts
-│   ├── web-browser.ts
-│   └── self-rewrite.ts
-├── firestore.rules
-├── next.config.*
-├── package.json
-├── tsconfig.json
-└── .env.example
-~~~
-
----
-
-## ⚠️ Production Hardening Roadmap
-
-Before treating THARA as a high-trust personal assistant, implement:
-
-- Distributed rate limiting
-- Firebase App Check
-- Passkeys/WebAuthn instead of anonymous authentication
-- Real biometric/device authentication boundaries
-- Proper session management
-- CSP and security headers
-- Audit logging
-- Tool-level permission scopes
-- Sandboxed code execution
-- Static analysis before self-rewrite
-- Automated unit/integration tests
-- Isolated build verification
-- Signed commits/releases
-- Human approval for high-impact changes
-- Secret rotation and centralized secret management
-- Persistent memory encryption with appropriate key management
-
-### Important
-
-The current self-rewrite system is a **controlled development capability**, not a guarantee that generated code is safe. Generated code should be tested and reviewed before production deployment.
-
----
-
-## THARA V5 — Capability Fabric
-
-THARA V5 unifies the requested capability layers behind one authenticated capability registry and smart router:
-
-- **Intelligence** — Intelligence Core and Agent Swarm for planning, delegation, verification and synthesis.
-- **Memory** — Memory Vault and Memory Knowledge Graph for durable user-scoped context.
-- **Autonomous Builder** — Autonomous Forge and Code Repair with guarded mission/approval boundaries.
-- **Research** — Deep Research and Research Workspace for multi-source evidence workflows.
-- **Voice** — Voice Core and Voice Command Router for wake-word, speech input and speech output where supported.
-- **Multimodal** — Vision Core and Document Intelligence for supplied visual/document inputs.
-- **Security** — Sentinel Security Gateway and Tool Permission Gateway.
-- **Performance** — Latency Engine and Parallel Execution for fast-path routing, measurement and concurrent retrieval.
-- **THARA Ecosystem** — Skills SDK, Automation Core and THARA API capability surfaces.
-
-The capability dashboard is available at:
-
-`/thara`
-
-The assistant API now returns `capabilityDomains` for each request so the UI and future agents can understand which THARA subsystems were selected.
-
----
-
-## Roadmap
-
-### THARA V1 — Companion Foundation
-- [x] Voice interaction
-- [x] Companion modes
-- [x] Persistent memory
-- [x] Authenticated assistant API
-- [x] Model routing
-- [x] Sentinel foundation
-
-### THARA V2 — Intelligence Fabric
-- [x] Knowledge Graph
-- [x] Semantic memory retrieval
-- [x] Multilingual support
-- [x] Automatic language detection
-- [x] Web browsing
-- [x] Multi-source research
-
-### THARA V3 — Data + Workshop
-- [x] Dataset Hub
-- [x] Federated dataset discovery
-- [x] Safe dataset preview/indexing
-- [x] Dataset retrieval
-- [x] Dataset/Knowledge Graph connection
-- [x] Workshop V1 → V8 architecture
-
-### THARA V4 — Advanced Autonomy
-- [x] Persistent mission/task queue
-- [x] Explicit approval boundary for consequential missions
-- [x] User-scoped mission API and Firestore rules
-- [x] V4 Autonomous Forge UI
-- [x] Permission model foundation
-- [x] Tool permission manager foundation
-- [x] THARA V5 capability fabric
-- [x] Capability-aware assistant routing
-- [x] Capability dashboard at `/thara`
-- [x] Intelligence + memory + builder + research + voice + multimodal + security + performance + ecosystem registry
-- [x] Native Android companion architecture
-- [x] Low-power native wake-word architecture
-- [x] Low-power native wake-word engine boundary
-- [x] Local model fallback adapter
-- [x] Sandboxed autonomous coding boundary
-- [x] Benchmark automation
-- [x] Long-term evaluation/learning signals
-
----
-
-
-## THARA V6 — Native + Learning Fabric
-
-THARA V6 adds the next infrastructure layer:
-
-- **Native Android Companion** — Android project skeleton with a foreground companion service and permission boundary.
-- **Low-Power Native Wake Word** — on-device wake-word service boundary; production detector/model remains local and replaceable.
-- **Local Model Fallback** — adapter for offline/local inference with cloud fallback policy.
-- **Sandboxed Autonomous Coding** — temporary isolated workspace, command allow/deny policy, timeouts and output limits.
-- **Benchmark Automation** — repeatable benchmark cases with latency and correctness results.
-- **Long-Term Evaluation/Learning** — persistent evaluation records can be aggregated into quality/latency learning signals.
-
-These capabilities are deliberately **guarded**: THARA does not silently gain unrestricted device, shell, microphone, deployment or self-modification authority. High-impact actions remain subject to explicit permissions and verification.
-
----
-
-## Philosophy
-
-THARA should behave less like:
-
-```text
-"Ask → answer"
-```
-
-and more like:
-
-```text
-"Listen → understand → plan → delegate → execute → verify → explain → learn"
-```
-
-The system should remain **user-controlled, security-bounded and transparent about what it actually executed**.
-
----
-
-## Repository
-
-**GitHub:** https://github.com/devadathdev/Thara-ai
-
-**Project:** THARA AI  
-**Architecture:** Next.js + TypeScript + Firebase + server-side model routing  
-**Interface:** Cinematic dark command center / JARVIS-inspired HUD
-
-
-## THARA V5 — Capability Fabric
-
-THARA V5 unifies the requested capability families behind one authenticated capability fabric:
-
-- Intelligence Core + Agent Swarm
-- Memory Vault + Memory Knowledge Graph
-- Autonomous Forge + Code Repair
-- Deep Research + Research Workspace
-- Voice Core + Voice Command Router
-- Vision Core + Document Intelligence
-- Sentinel Security Gateway + Tool Permission Gateway
-- Latency Engine + Parallel Execution
-- THARA Skills SDK + Automation Core + THARA API
-
-The capability registry is available at `/api/thara` and the dedicated dashboard at `/thara`. Capability routing records lightweight telemetry under each user's scoped Firestore collection. Consequential automation remains guarded by explicit approval boundaries.
-
-## THARA V7 — Complete Capability Fabric
-
-THARA V7 consolidates the platform into a single capability registry. Every capability is explicitly classified as online, guarded, beta, or planned so the interface does not imply that an architecture boundary is already a production integration.
-
-### Capability domains
-
-- Intelligence: Reasoning Core, Agent Orchestrator, Task Planner, Context Engine, Decision Support, Self Reflection.
-- Memory: Memory Vault, Episodic Memory, Semantic Memory, Knowledge Graph, Memory Consolidation, Memory Encryption.
-- Builder: Autonomous Forge, Code Repair, Repository Agent, Test Generation, Dependency Audit, CI/CD Orchestrator, Artifact Packager.
-- Research: Deep Research, Research Workspace, Literature Mapping, Citation Verification, Experiment Manager, Hypothesis Engine.
-- Voice: Voice Core, Wake Word, Voice Command Router, Barge-In, Prosody Control.
-- Multimodal: Vision, Document Intelligence, OCR, Audio Intelligence, Video Intelligence, 3D Understanding.
-- Security: Sentinel, Prompt-Injection Defense, Permission Gateway, Fingerprint Line Clear Authentication, Secret Scanner, Security Audit, Incident Response.
-- Performance: Latency Engine, Parallel Execution, Semantic Cache, Adaptive Model Router, Offline Mode, Cost Router.
-- Data: Dataset Hub, Dataset Quality, PII Filtering, Data Lineage, Synthetic Data, Feature Store.
-- ML: Model Lab, RAG Forge, Model Evaluation, Fine-Tuning Pipeline, Model Registry.
-- Engineering: Requirements Engineering, CAD, Generative Design, CAE, Engineering Optimization, Surrogate Models, PLM/Digital Thread.
-- Manufacturing: CAM/CNC, DFM/DFA, BOM/Costing, Quality/Inspection, Additive Manufacturing, Electronics Engineering.
-- Industry 4.0: IIoT, OPC UA, MQTT/Sparkplug, Modbus, Digital Twin, MES, OEE, Predictive Maintenance, Factory Telemetry, Production Traceability.
-- Robotics: Robotics Orchestrator, ROS 2, Robot Simulation, Motion Planning.
-- Science: Scientific Computing, Computational Chemistry, Materials Intelligence, Nanomaterials Intelligence, Physics-Informed AI.
-- Healthcare: Healthcare Data Boundary, Clinical Literature Research, Biomedical RAG.
-- Agriculture: Agriculture Intelligence, Farm IoT.
-- Climate: Climate Intelligence.
-- Product: Project OS, Meeting Intelligence, Personal Intelligence Dashboard, Notification Engine.
-- Device: Native Android Companion, Device Control, Local File Intelligence, System Automation.
-- Ecosystem: Skills SDK, THARA API, Automation Core, Team Collaboration, Webhooks/Events.
-- Evaluation: Benchmark Arena, Long-Term Evaluation, Safety Evaluation, Observability, Audit Ledger.
-- Experience: Cinematic HUD, Accessibility, Multilingual Core, Adaptive Personality, AR/VR Interface.
-
-The canonical registry is lib/thara-complete.ts. The /api/thara capability endpoint exposes the complete registry and the /thara dashboard displays the full domain surface.
-
-Execution truth: planned capabilities are architecture targets, beta capabilities are partial/integration-stage, and guarded capabilities require explicit authorization and verification. Industrial, device, CNC and other high-impact actions remain protected from direct autonomous execution.
-
-
-## THARA V7 — Command Center UI
-
-The THARA V7 interface has been upgraded into a **technical AI command center** rather than a conventional dashboard.
-
-### Command Center interface
-
-- Technical blue/cyan glassmorphic visual system
-- Dark navy engineering-console foundation
-- Holographic HUD panels and technical grid
-- Command Center navigation rail
-- Live system state indicators
-- Capability Matrix
-- Master / Execution-Ready / Foundation execution levels
-- Mission Command Console
-- AI capability routing
-- Engineering Command surface
-- Sentinel Security surface
-- Telemetry stream
-- System metrics
-- Active capability/domain monitoring
-- Responsive desktop and mobile navigation
-- Accessibility and reduced-motion support
-
-### Primary command-center flow
-
-`OVERVIEW → COMMAND → CAPABILITIES → ENGINEERING → SENTINEL → TELEMETRY`
-
-The dashboard is designed around a technical operations workflow:
-
-`OBSERVE → REASON → ROUTE → PLAN → VERIFY → EXECUTE → AUDIT`
-
-The UI remains a **control and orchestration surface**, not an unrestricted authorization mechanism. High-impact actions remain subject to the underlying authentication, permission, approval, verification and sandbox boundaries.
-
-The command-center implementation lives in `app/thara/page.tsx`, with the futuristic blue technical visual system defined in `app/globals.css`.
-
-## THARA Capability Build Order
-
-THARA is being implemented in a strict dependency order. Each layer is established before expanding into the next.
-
-### ① Agent Orchestrator + Tool System — EXECUTION LEVEL
-
-This gives THARA actual, bounded agency.
-
-Implemented execution path: OBJECTIVE → SAFETY CHECK → PLAN → ROUTE → TOOL → RESULT → TELEMETRY
-
-- Agent Orchestrator
-- Tool registry and tool metadata
-- Mission planning
-- Capability routing
-- Tool risk classification: safe / approval / protected
-- Multi-step mission lifecycle
-- Execution tracing and telemetry
-- `/api/agent` orchestration endpoint
-- Core tools: Capability Router and Mission Inspector
-
-**Flow:** `OBJECTIVE → PLAN → ROUTE → TOOL → OBSERVE`
-
-### ② Verification + Security + Sandbox — EXECUTION LEVEL
-
-This makes THARA's agency reliable instead of dangerous or unpredictable.
-
-- Objective safety verification
-- Tool-level verification gates
-- Approval boundaries
-- Protected-operation boundaries
-- Sandboxed code execution
-- Prompt-injection defense
-- Permission gateway
-- Secret scanning
-- Fingerprint Line Clear authentication
-- Engineering execution boundaries
-- Telemetry and audit events
-
-**Flow:** `VERIFY → AUTHORIZE → ISOLATE → EXECUTE → AUDIT`
-
-High-impact actions remain gated. The agent does not receive unrestricted machine, production or security-control authority.
-
-### ③ Multimodal Perception + Physical-World Interfaces + Holographic Command Center — EXECUTION-READY FOUNDATION
-
-This expands THARA from a software agent toward an AI operating system.
-
-- Image, document, audio, video and 3D perception pipeline definitions
-- `/api/perception` authenticated perception endpoint
-- Vision Core
-- Document Intelligence / OCR
-- Audio and video intelligence foundations
-- 3D/spatial understanding foundation
-- Physical-world interface architecture
-- Robotics / ROS2 capability layer
-- OPC UA / MQTT / Sparkplug / Modbus interfaces
-- Digital Twin / MES / OEE / factory telemetry foundations
-- CAD / CAE / CAM engineering interfaces
-- THARA technical holographic-style command center at `/thara`
-- Capability Matrix, Mission Console, Engineering, Sentinel and Telemetry surfaces
-
-**Flow:** `PERCEIVE → UNDERSTAND → PLAN → VERIFY → INTERFACE → OBSERVE`
-
-### Architectural progression
-
-`① AGENCY → ② SAFETY → ③ PERCEPTION + PHYSICAL-WORLD ORCHESTRATION`
-
-The order is intentional: THARA first gains bounded agency, then establishes verification/security/sandbox controls, and only then expands that controlled agency into multimodal perception and physical-world interfaces.
-
+High-impact physical operations remain behind the hardware gateway rather than being executed directly from the browser.
 
 ## Execution-Level Policy
 
@@ -714,4 +109,44 @@ The capability registry distinguishes:
 - **EXECUTION-READY** — an implementation path exists but requires approval, verification and/or sandbox controls.
 - **FOUNDATION** — architecture exists, but direct execution remains disabled until the real integration is implemented.
 
-THARA does not claim physical-world execution merely because an interface exists. Industrial, robotics, deployment, security-control and other high-impact integrations remain behind their actual gateway, authentication, approval and safety boundaries.
+For hardware specifically, the gateway foundation is **execution-ready**, while physical device execution remains disabled until a real authenticated protocol adapter is installed and verified.
+
+## THARA Command Center
+
+The `/thara` interface provides:
+
+- Command Console
+- Capability Matrix
+- Engineering surface
+- Sentinel security surface
+- Telemetry
+- Execution state
+- Hardware Gateway status
+
+The intended operational loop is:
+
+`OBSERVE -> REASON -> ROUTE -> PLAN -> VERIFY -> EXECUTE -> AUDIT -> OBSERVE`
+
+## Hardware Gateway Activation Plan
+
+When the gateway laptop/industrial PC is available:
+
+1. Install the gateway service.
+2. Pair the gateway securely with THARA.
+3. Register equipment in simulation mode.
+4. Validate read-only telemetry.
+5. Run simulated commands.
+6. Install the required protocol adapter.
+7. Validate the adapter against the target equipment.
+8. Enable physical execution only after local safety and authorization checks pass.
+9. Stream command results and telemetry back to THARA.
+
+THARA will remain transparent about whether a command was **planned, simulated, accepted by the gateway, or physically executed**.
+
+## Repository
+
+**GitHub:** https://github.com/devadathdev/Thara-ai
+
+**Project:** THARA AI  
+**Architecture:** Next.js + TypeScript + Firebase + server-side model routing  
+**Interface:** Technical blue/cyan command center
