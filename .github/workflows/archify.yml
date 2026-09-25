@@ -29,13 +29,13 @@ jobs:
         run: |
           node .archify/archify/bin/archify.mjs validate architecture docs/architecture/thara.architecture.json --quality showcase --json
           mkdir -p public/archify
-          node .archify/archify/bin/archify.mjs deliver architecture docs/architecture/thara.architecture.json public/archify/thara-architecture.html --quality showcase --json
+          node .archify/archify/bin/archify.mjs deliver architecture docs/architecture/thara.architecture.json public/archify/thara-runtime-architecture.html --quality showcase --json
 
       - name: Commit generated artifact
         run: |
           git config user.name "THARA Archify Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/archify/thara-architecture.html
+          git add public/archify/thara-runtime-architecture.html
           git diff --cached --quiet && exit 0
-          git commit -m "build: render THARA architecture with Archify"
+          git commit -m "build: render THARA runtime architecture with Archify"
           git push
