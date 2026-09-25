@@ -2,36 +2,62 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "THARA AI — Autonomous Intelligence Fabric",
-    "output": "thara-architecture-rendered.html",
-    "quality_profile": "showcase"
+    "title": "THARA AI — High-Level Runtime Architecture",
+    "output": "thara-runtime-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "primary-request",
+        "label": "Primary request path",
+        "focus": [
+          "command-center",
+          "api",
+          "orchestrator",
+          "verification",
+          "model-router",
+          "memory",
+          "telemetry"
+        ],
+        "note": "Follow an authenticated request through planning, verification, intelligence, state and audit."
+      },
+      {
+        "id": "engineering-boundary",
+        "label": "Engineering boundary",
+        "focus": [
+          "orchestrator",
+          "engineering",
+          "gateway"
+        ],
+        "note": "Inspect the guarded path from software planning to the hardware gateway."
+      }
+    ]
   },
   "components": [
     {
-      "id": "ui",
+      "id": "command-center",
       "type": "frontend",
       "label": "THARA Command Center",
       "sublabel": "Next.js / voice / multimodal",
       "pos": [
         40,
-        80
+        300
       ],
       "size": [
-        160,
+        170,
         68
       ]
     },
     {
       "id": "api",
       "type": "backend",
-      "label": "Assistant + API Layer",
-      "sublabel": "Authenticated server routes",
+      "label": "Authenticated API Layer",
+      "sublabel": "Next.js server routes",
       "pos": [
         250,
-        80
+        300
       ],
       "size": [
-        160,
+        170,
         68
       ]
     },
@@ -39,27 +65,41 @@
       "id": "orchestrator",
       "type": "backend",
       "label": "Agent Orchestrator",
-      "sublabel": "Plan → route → tool → result",
+      "sublabel": "Plan → route → tool",
       "pos": [
         460,
-        80
+        300
       ],
       "size": [
-        160,
+        170,
         68
       ]
     },
     {
-      "id": "security",
+      "id": "verification",
       "type": "security",
       "label": "Verification + Sentinel",
-      "sublabel": "Permission / Line Clear / audit",
+      "sublabel": "Permissions / Line Clear",
       "pos": [
         670,
-        80
+        300
       ],
       "size": [
-        160,
+        170,
+        68
+      ]
+    },
+    {
+      "id": "model-router",
+      "type": "cloud",
+      "label": "Model Router",
+      "sublabel": "Cloud + local fallback",
+      "pos": [
+        880,
+        300
+      ],
+      "size": [
+        170,
         68
       ]
     },
@@ -69,11 +109,11 @@
       "label": "Memory + Knowledge Graph",
       "sublabel": "Firebase-backed context",
       "pos": [
-        250,
-        230
+        1090,
+        300
       ],
       "size": [
-        160,
+        180,
         68
       ]
     },
@@ -81,13 +121,13 @@
       "id": "research",
       "type": "cloud",
       "label": "Research + Dataset Fabric",
-      "sublabel": "Web / datasets / satellite intelligence",
+      "sublabel": "Web / datasets / satellite",
       "pos": [
-        460,
-        230
+        670,
+        470
       ],
       "size": [
-        160,
+        190,
         68
       ]
     },
@@ -95,54 +135,111 @@
       "id": "engineering",
       "type": "backend",
       "label": "Engineering Fabric",
-      "sublabel": "CAD / CAE / manufacturing / Industry 4.0",
+      "sublabel": "CAD / CAE / manufacturing / IIoT",
       "pos": [
-        250,
-        380
+        460,
+        470
       ],
       "size": [
-        160,
+        190,
         68
       ]
     },
     {
       "id": "gateway",
       "type": "external",
-      "label": "Hardware Gateway",
-      "sublabel": "OPC UA / MQTT / Sparkplug / Modbus",
+      "label": "Secure Hardware Gateway",
+      "sublabel": "OPC UA / MQTT / Modbus",
       "pos": [
-        460,
-        380
+        250,
+        470
       ],
       "size": [
-        160,
+        190,
         68
       ]
     },
     {
       "id": "telemetry",
       "type": "database",
-      "label": "Telemetry + Audit",
-      "sublabel": "Observed results and action records",
+      "label": "Telemetry + Audit Ledger",
+      "sublabel": "Mission outcomes / traces",
       "pos": [
-        670,
-        380
+        1090,
+        470
       ],
       "size": [
-        160,
+        180,
         68
+      ]
+    },
+    {
+      "id": "firebase",
+      "type": "external",
+      "label": "Firebase",
+      "sublabel": "Auth + Firestore",
+      "pos": [
+        250,
+        120
+      ],
+      "size": [
+        150,
+        60
+      ]
+    },
+    {
+      "id": "providers",
+      "type": "external",
+      "label": "AI Providers",
+      "sublabel": "Gemini / OpenRouter / local",
+      "pos": [
+        880,
+        120
+      ],
+      "size": [
+        170,
+        60
+      ]
+    },
+    {
+      "id": "web-data",
+      "type": "external",
+      "label": "External Data",
+      "sublabel": "Web / satellite sources",
+      "pos": [
+        670,
+        620
+      ],
+      "size": [
+        170,
+        60
+      ]
+    },
+    {
+      "id": "equipment",
+      "type": "external",
+      "label": "Industrial Equipment",
+      "sublabel": "PLC / robot / sensor",
+      "pos": [
+        40,
+        620
+      ],
+      "size": [
+        190,
+        60
       ]
     }
   ],
   "boundaries": [
     {
       "kind": "security-group",
-      "label": "Authenticated THARA Trust Boundary",
+      "label": "THARA authenticated trust boundary",
       "wraps": [
-        "ui",
+        "command-center",
         "api",
         "orchestrator",
-        "security",
+        "verification",
+        "model-router",
         "memory",
         "research",
         "engineering",
@@ -151,18 +248,29 @@
     },
     {
       "kind": "region",
+      "label": "External service boundary",
+      "wraps": [
+        "firebase",
+        "providers",
+        "web-data"
+      ]
+    },
+    {
+      "kind": "region",
       "label": "Physical-world boundary — gateway required",
       "wraps": [
-        "gateway"
+        "gateway",
+        "equipment"
       ]
     }
   ],
   "connections": [
     {
-      "id": "ui-api",
-      "from": "ui",
+      "id": "request-api",
+      "from": "command-center",
       "to": "api",
-      "label": "commands"
+      "label": "authenticated request",
+      "variant": "emphasis"
     },
     {
       "id": "api-orchestrator",
@@ -171,29 +279,35 @@
       "label": "mission"
     },
     {
-      "id": "orchestrator-security",
+      "id": "orchestrator-verification",
       "from": "orchestrator",
-      "to": "security",
-      "label": "verify",
+      "to": "verification",
+      "label": "verify action",
       "variant": "security"
     },
     {
-      "id": "security-memory",
-      "from": "security",
-      "to": "memory",
-      "label": "scoped context"
+      "id": "verification-model",
+      "from": "verification",
+      "to": "model-router",
+      "label": "approved intelligence"
     },
     {
-      "id": "orchestrator-research",
-      "from": "orchestrator",
-      "to": "research",
-      "label": "retrieve"
+      "id": "model-memory",
+      "from": "model-router",
+      "to": "memory",
+      "label": "context / response"
+    },
+    {
+      "id": "memory-telemetry",
+      "from": "memory",
+      "to": "telemetry",
+      "label": "state + audit"
     },
     {
       "id": "orchestrator-engineering",
       "from": "orchestrator",
       "to": "engineering",
-      "label": "plan"
+      "label": "engineering plan"
     },
     {
       "id": "engineering-gateway",
@@ -203,45 +317,41 @@
       "variant": "security"
     },
     {
-      "id": "gateway-telemetry",
+      "id": "gateway-equipment",
       "from": "gateway",
-      "to": "telemetry",
-      "label": "telemetry"
-    },
-    {
-      "id": "orchestrator-telemetry",
-      "from": "orchestrator",
-      "to": "telemetry",
-      "label": "mission audit"
+      "to": "equipment",
+      "label": "simulation / guarded control",
+      "variant": "security"
     }
   ],
   "cards": [
     {
       "dot": "cyan",
-      "title": "Core",
+      "title": "Primary path",
       "items": [
-        "Command Center",
-        "Assistant/API",
-        "Agent Orchestrator",
-        "Verification + Sentinel"
+        "Command Center → API → Agent Orchestrator → Verification → Model Router → Memory → Telemetry",
+        "Requests are authenticated before orchestration.",
+        "Tool execution is risk-scoped and verified."
       ]
     },
     {
       "dot": "emerald",
-      "title": "Intelligence",
+      "title": "External dependencies",
       "items": [
-        "Memory + Knowledge Graph",
-        "Research + Dataset Fabric",
-        "Satellite Intelligence"
+        "Firebase provides authentication and Firestore-backed persistence.",
+        "AI providers supply cloud inference; local inference is a fallback path.",
+        "Research and satellite intelligence consume external data sources.",
+        "Engineering tools/protocol adapters sit behind integration boundaries."
       ]
     },
     {
       "dot": "rose",
-      "title": "Engineering",
+      "title": "Trust & ownership",
       "items": [
-        "CAD / CAE / Manufacturing",
-        "Industry 4.0",
-        "Hardware Gateway remains approval-gated"
+        "THARA owns orchestration, policy, memory, research routing and telemetry.",
+        "Sentinel owns permission and protected-action verification.",
+        "The hardware gateway owns the physical-world boundary.",
+        "Physical execution is not implied: gateway defaults to simulation and requires approval + Line Clear + a real adapter."
       ]
     }
   ]
