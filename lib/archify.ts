@@ -37,7 +37,7 @@ export function archifyRuntimeStatus() {
 export function tharaArchitectureSource() {
   return {
     path: "docs/architecture/thara.architecture.json",
-    output: "public/archify/thara-architecture.html",
-    command: "node archify/bin/archify.mjs deliver architecture docs/architecture/thara.architecture.json public/archify/thara-architecture.html --quality showcase --json",
+    output: "public/archify/thara-runtime-architecture.html",
+    command: "node archify/bin/archify.mjs deliver architecture docs/architecture/thara.architecture.json public/archify/thara-runtime-architecture.html --quality showcase --json",
   };
 }
