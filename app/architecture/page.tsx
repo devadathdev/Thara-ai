@@ -61,7 +61,7 @@ export default function ArchitecturePage() {
         <div className="mt-3 overflow-hidden rounded-[28px] border border-[#63D8FF]/10 bg-black/30">
           <iframe
             title="THARA Archify architecture"
-            src="/archify/thara-architecture.html"
+            src="/archify/thara-runtime-architecture.html"
             className="h-[760px] w-full"
           />
           <div className="border-t border-white/10 px-5 py-3 text-[8px] text-white/30">
