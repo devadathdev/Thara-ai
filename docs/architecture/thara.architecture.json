@@ -3,23 +3,8 @@
   "diagram_type": "architecture",
   "meta": {
     "title": "THARA AI — Autonomous Intelligence Fabric",
-    "subtitle": "Command center, orchestration, security, engineering and hardware gateway boundaries",
-    "output": "public/archify/thara-architecture.html",
-    "animation": "none",
-    "visual_preset": "blueprint",
+    "output": "thara-architecture-rendered.html",
     "quality_profile": "showcase"
-  },
-  "layout": {
-    "mode": "grid",
-    "origin": {
-      "x": 40,
-      "y": 40
-    },
-    "cols": 4,
-    "gapX": 80,
-    "gapY": 90,
-    "cellW": 240,
-    "cellH": 92
   },
   "components": [
     {
@@ -27,72 +12,126 @@
       "type": "frontend",
       "label": "THARA Command Center",
       "sublabel": "Next.js / voice / multimodal",
-      "row": 0,
-      "col": 0
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "api",
       "type": "backend",
       "label": "Assistant + API Layer",
       "sublabel": "Authenticated server routes",
-      "row": 0,
-      "col": 1
+      "pos": [
+        250,
+        80
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "orchestrator",
       "type": "backend",
       "label": "Agent Orchestrator",
       "sublabel": "Plan → route → tool → result",
-      "row": 0,
-      "col": 2
+      "pos": [
+        460,
+        80
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "security",
       "type": "security",
       "label": "Verification + Sentinel",
       "sublabel": "Permission / Line Clear / audit",
-      "row": 0,
-      "col": 3
+      "pos": [
+        670,
+        80
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "memory",
       "type": "database",
       "label": "Memory + Knowledge Graph",
       "sublabel": "Firebase-backed context",
-      "row": 1,
-      "col": 1
+      "pos": [
+        250,
+        230
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "research",
       "type": "cloud",
       "label": "Research + Dataset Fabric",
       "sublabel": "Web / datasets / satellite intelligence",
-      "row": 1,
-      "col": 2
+      "pos": [
+        460,
+        230
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "engineering",
       "type": "backend",
       "label": "Engineering Fabric",
       "sublabel": "CAD / CAE / manufacturing / Industry 4.0",
-      "row": 2,
-      "col": 1
+      "pos": [
+        250,
+        380
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "gateway",
       "type": "external",
       "label": "Hardware Gateway",
       "sublabel": "OPC UA / MQTT / Sparkplug / Modbus",
-      "row": 2,
-      "col": 2
+      "pos": [
+        460,
+        380
+      ],
+      "size": [
+        160,
+        68
+      ]
     },
     {
       "id": "telemetry",
       "type": "database",
       "label": "Telemetry + Audit",
       "sublabel": "Observed results and action records",
-      "row": 2,
-      "col": 3
+      "pos": [
+        670,
+        380
+      ],
+      "size": [
+        160,
+        68
+      ]
     }
   ],
   "boundaries": [
@@ -108,16 +147,14 @@
         "research",
         "engineering",
         "telemetry"
-      ],
-      "pad": 24
+      ]
     },
     {
       "kind": "region",
       "label": "Physical-world boundary — gateway required",
       "wraps": [
         "gateway"
-      ],
-      "pad": 24
+      ]
     }
   ],
   "connections": [
@@ -125,66 +162,87 @@
       "id": "ui-api",
       "from": "ui",
       "to": "api",
-      "label": "commands",
-      "route": "auto"
+      "label": "commands"
     },
     {
       "id": "api-orchestrator",
       "from": "api",
       "to": "orchestrator",
-      "label": "mission",
-      "route": "auto"
+      "label": "mission"
     },
     {
       "id": "orchestrator-security",
       "from": "orchestrator",
       "to": "security",
       "label": "verify",
-      "route": "auto",
       "variant": "security"
     },
     {
       "id": "security-memory",
       "from": "security",
       "to": "memory",
-      "label": "scoped context",
-      "route": "auto"
+      "label": "scoped context"
     },
     {
       "id": "orchestrator-research",
       "from": "orchestrator",
       "to": "research",
-      "label": "retrieve",
-      "route": "auto"
+      "label": "retrieve"
     },
     {
       "id": "orchestrator-engineering",
       "from": "orchestrator",
       "to": "engineering",
-      "label": "plan",
-      "route": "auto"
+      "label": "plan"
     },
     {
       "id": "engineering-gateway",
       "from": "engineering",
       "to": "gateway",
       "label": "approved gateway job",
-      "route": "auto",
       "variant": "security"
     },
     {
       "id": "gateway-telemetry",
       "from": "gateway",
       "to": "telemetry",
-      "label": "telemetry",
-      "route": "auto"
+      "label": "telemetry"
     },
     {
       "id": "orchestrator-telemetry",
       "from": "orchestrator",
       "to": "telemetry",
-      "label": "mission audit",
-      "route": "auto"
+      "label": "mission audit"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Core",
+      "items": [
+        "Command Center",
+        "Assistant/API",
+        "Agent Orchestrator",
+        "Verification + Sentinel"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Intelligence",
+      "items": [
+        "Memory + Knowledge Graph",
+        "Research + Dataset Fabric",
+        "Satellite Intelligence"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Engineering",
+      "items": [
+        "CAD / CAE / Manufacturing",
+        "Industry 4.0",
+        "Hardware Gateway remains approval-gated"
+      ]
     }
   ]
-}\n
+}
