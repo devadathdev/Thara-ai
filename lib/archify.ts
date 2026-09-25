@@ -11,7 +11,7 @@ export type ArchifyDiagramType =
 export function archifyCapabilities() {
   return {
     name: "Archify",
-    version: "2.13",
+    version: "2.17",
     upstream: "https://github.com/tt-a1i/archify",
     diagramTypes: ["architecture", "workflow", "sequence", "dataflow", "lifecycle"] as ArchifyDiagramType[],
     outputs: ["interactive-html", "svg", "png", "webm", "share-card"],
