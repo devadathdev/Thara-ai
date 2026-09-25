@@ -180,6 +180,7 @@ export const THARA_COMPLETE_CAPABILITIES: TharaExpansionCapability[] = [
   ["agri-intelligence","Agriculture Intelligence","agriculture","planned","Crop, soil, weather and farm-data reasoning.",["analyze","predict","recommend"]],
   ["farm-iot","Farm IoT","agriculture","planned","Sensor telemetry and farm digital-twin boundary.",["ingest","monitor","simulate"]],
   ["climate-intelligence","Climate Intelligence","climate","planned","Climate datasets, risk analysis and scenario workflows.",["retrieve","model","compare"]],
+  ["satellite-intelligence","Satellite Intelligence","earth-observation","beta","Read-only satellite-data intelligence for Earth observation, environmental monitoring and geospatial change analysis.",["discover","analyze","detect-change","fuse-evidence","monitor"]],
 
   // Product / knowledge
   ["project-os","Project OS","product","beta","Projects, milestones, tasks, artifacts and decisions in one graph.",["plan","track","link"]],
