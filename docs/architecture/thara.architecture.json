@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "THARA AI — Autonomous Intelligence Fabric",
+    "subtitle": "Command center, orchestration, security, engineering and hardware gateway boundaries",
+    "output": "public/archify/thara-architecture.html",
+    "animation": "none",
+    "visual_preset": "blueprint",
+    "quality_profile": "showcase"
+  },
+  "layout": {
+    "mode": "grid",
+    "origin": {
+      "x": 40,
+      "y": 40
+    },
+    "cols": 4,
+    "gapX": 80,
+    "gapY": 90,
+    "cellW": 240,
+    "cellH": 92
+  },
+  "components": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "THARA Command Center",
+      "sublabel": "Next.js / voice / multimodal",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Assistant + API Layer",
+      "sublabel": "Authenticated server routes",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "orchestrator",
+      "type": "backend",
+      "label": "Agent Orchestrator",
+      "sublabel": "Plan → route → tool → result",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "security",
+      "type": "security",
+      "label": "Verification + Sentinel",
+      "sublabel": "Permission / Line Clear / audit",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "memory",
+      "type": "database",
+      "label": "Memory + Knowledge Graph",
+      "sublabel": "Firebase-backed context",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "research",
+      "type": "cloud",
+      "label": "Research + Dataset Fabric",
+      "sublabel": "Web / datasets / satellite intelligence",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "engineering",
+      "type": "backend",
+      "label": "Engineering Fabric",
+      "sublabel": "CAD / CAE / manufacturing / Industry 4.0",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "gateway",
+      "type": "external",
+      "label": "Hardware Gateway",
+      "sublabel": "OPC UA / MQTT / Sparkplug / Modbus",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "telemetry",
+      "type": "database",
+      "label": "Telemetry + Audit",
+      "sublabel": "Observed results and action records",
+      "row": 2,
+      "col": 3
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Authenticated THARA Trust Boundary",
+      "wraps": [
+        "ui",
+        "api",
+        "orchestrator",
+        "security",
+        "memory",
+        "research",
+        "engineering",
+        "telemetry"
+      ],
+      "pad": 24
+    },
+    {
+      "kind": "region",
+      "label": "Physical-world boundary — gateway required",
+      "wraps": [
+        "gateway"
+      ],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-api",
+      "from": "ui",
+      "to": "api",
+      "label": "commands",
+      "route": "auto"
+    },
+    {
+      "id": "api-orchestrator",
+      "from": "api",
+      "to": "orchestrator",
+      "label": "mission",
+      "route": "auto"
+    },
+    {
+      "id": "orchestrator-security",
+      "from": "orchestrator",
+      "to": "security",
+      "label": "verify",
+      "route": "auto",
+      "variant": "security"
+    },
+    {
+      "id": "security-memory",
+      "from": "security",
+      "to": "memory",
+      "label": "scoped context",
+      "route": "auto"
+    },
+    {
+      "id": "orchestrator-research",
+      "from": "orchestrator",
+      "to": "research",
+      "label": "retrieve",
+      "route": "auto"
+    },
+    {
+      "id": "orchestrator-engineering",
+      "from": "orchestrator",
+      "to": "engineering",
+      "label": "plan",
+      "route": "auto"
+    },
+    {
+      "id": "engineering-gateway",
+      "from": "engineering",
+      "to": "gateway",
+      "label": "approved gateway job",
+      "route": "auto",
+      "variant": "security"
+    },
+    {
+      "id": "gateway-telemetry",
+      "from": "gateway",
+      "to": "telemetry",
+      "label": "telemetry",
+      "route": "auto"
+    },
+    {
+      "id": "orchestrator-telemetry",
+      "from": "orchestrator",
+      "to": "telemetry",
+      "label": "mission audit",
+      "route": "auto"
+    }
+  ]
+}\n
