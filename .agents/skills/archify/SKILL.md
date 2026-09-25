@@ -3,7 +3,7 @@ name: archify
 description: Create polished, validated architecture, workflow, sequence, data-flow, and lifecycle/state diagrams as explorable standalone HTML with motion and crisp export. Use when THARA needs system architecture, workflow, sequence, data-flow, or lifecycle visualization.
 license: MIT
 metadata:
-  version: "2.13"
+  version: "2.17"
   author: tt-a1i
 ---
 # Archify for THARA
