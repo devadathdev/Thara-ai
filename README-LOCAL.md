@@ -24,3 +24,7 @@ The schema and local auth foundation do not mean every feature has migrated. Thi
 ## Local model policy
 
 `THARA_LOCAL_ONLY=true` is the default. The router sends inference only to the loopback Ollama OpenAI-compatible endpoint at `http://127.0.0.1:11434/v1/chat/completions`. If the local model is stopped or unavailable, THARA returns a failure instead of sending prompts to a cloud provider. Cloud routing requires the explicit opt-out `THARA_LOCAL_ONLY=false` and configured provider credentials.
+
+## Existing cloud data and passkeys
+
+Do not delete the original Firestore project or backups until you have exported and reconciled any memories, missions, datasets and telemetry you need. The application migration does not automatically download data from Firebase. The new local owner account is independent of the old anonymous Firebase identity. Re-register WebAuthn/passkey credentials on the local origin; credentials bound to a different relying-party ID cannot simply be copied over. Old approval tokens must never be reused; request fresh approvals for any imported mission.

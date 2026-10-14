@@ -35,6 +35,10 @@ function timeoutMs() {
   return boundedEnvNumber("THARA_MODEL_TIMEOUT_MS", DEFAULT_TIMEOUT_MS, 1_000, 60_000);
 }
 
+function localTimeoutMs() {
+  return boundedEnvNumber("THARA_LOCAL_MODEL_TIMEOUT_MS", 120_000, 1_000, 180_000);
+}
+
 function maxOutputTokens() {
   return boundedEnvNumber("THARA_MAX_OUTPUT_TOKENS", DEFAULT_MAX_OUTPUT_TOKENS, 64, 8_192);
 }
@@ -56,8 +60,8 @@ function classifyError(error: unknown): ProviderAttempt["errorCode"] {
   return "unknown";
 }
 
-async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}) {
-  return fetch(input, { ...init, signal: AbortSignal.timeout(timeoutMs()) });
+async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}, durationMs = timeoutMs()) {
+  return fetch(input, { ...init, signal: AbortSignal.timeout(durationMs) });
 }
 
 async function readProviderError(response: Response, provider: Provider) {
@@ -83,7 +87,7 @@ export async function callModel(provider: Provider, model: string, messages: Mod
     const response = await fetchWithTimeout(endpoint, {
       method: "POST", headers,
       body: JSON.stringify({ model, messages, temperature: 0.2, max_tokens: maxOutputTokens(), stream: false }),
-    });
+    }, localTimeoutMs());
     if (!response.ok) await readProviderError(response, provider);
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content;
