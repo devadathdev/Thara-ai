@@ -1,4 +1,4 @@
-import { getFirestore } from "firebase-admin/firestore";
+import { db } from "@/lib/db";
 
 export type TharaCapability = {
   id: string;
@@ -64,7 +64,11 @@ export function routeCapability(message: string) {
 }
 
 export async function getCapabilityTelemetry(uid: string) {
-  const db = getFirestore();
-  const snap = await db.collection("users").doc(uid).collection("tharaTelemetry").orderBy("createdAt","desc").limit(25).get();
-  return snap.docs.map(d=>({id:d.id,...d.data()}));
+  const events = await db.telemetryEvent.findMany({ where: { ownerId: uid }, orderBy: { createdAt: "desc" }, take: 25 });
+  return events.map(event => ({
+    id: event.id,
+    event: event.category,
+    ...(event.payload && typeof event.payload === "object" && !Array.isArray(event.payload) ? event.payload as Record<string, unknown> : {}),
+    createdAt: event.createdAt
+  }));
 }
