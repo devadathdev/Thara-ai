@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   try {
     const user = await verifyBearerToken(req);
     const telemetry = await getCapabilityTelemetry(user.uid).catch(()=>[]);
-    return NextResponse.json({ok:true,version:"V7",capabilities:THARA_CAPABILITIES,summary:capabilitySummary(),completeCapabilities:allTharaCapabilities(),completeSummary:completeCapabilitySummary(),executionSummary:capabilityExecutionSummary(),masterCapabilities:getMasterCapabilities(),engineering:{tools:ENGINEERING_TOOLS,workflows:ENGINEERING_WORKFLOWS,summary:engineeringToolSummary()},telemetry});
+    return NextResponse.json({ok:true,version:"V7",runtime:{deployment:"hybrid",localInferenceConfigured:Boolean(process.env.THARA_LOCAL_MODEL_URL),preferLocal:process.env.THARA_PREFER_LOCAL==="true",cloudInferenceConfigured:Boolean(process.env.GEMINI_API_KEY||process.env.OPENROUTER_API_KEY)},capabilities:THARA_CAPABILITIES,summary:capabilitySummary(),completeCapabilities:allTharaCapabilities(),completeSummary:completeCapabilitySummary(),executionSummary:capabilityExecutionSummary(),masterCapabilities:getMasterCapabilities(),engineering:{tools:ENGINEERING_TOOLS,workflows:ENGINEERING_WORKFLOWS,summary:engineeringToolSummary()},telemetry});
   } catch {
     return NextResponse.json({error:"Authentication failed"},{status:401});
   }
