@@ -50,6 +50,12 @@ test("physical machine commands require approval and retain hardware boundary", 
   assert.match(plan.nextStep, /does not actuate hardware/i);
 });
 
+test("common robot activation requests are also approval-gated", () => {
+  const plan = buildAutonomyPlan("Activate the robot arm.");
+  assert.equal(plan.action, "hardware_control");
+  assert.equal(plan.decision, "approval_required");
+});
+
 test("destructive operations and security bypasses require approval", () => {
   assert.equal(buildAutonomyPlan("Delete the production database.").decision, "approval_required");
   assert.equal(buildAutonomyPlan("Disable authentication checks.").decision, "approval_required");
