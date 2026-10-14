@@ -1,7 +1,5 @@
 "use client";
 import {useEffect,useMemo,useRef,useState} from "react";
-import {auth} from "@/lib/firebase";
-import {signInAnonymously} from "firebase/auth";
 import {SUPPORTED_LANGUAGES} from "@/lib/languages";
 
 const team=[["◈","ARCHITECT","Systems"],["⌁","WEB","Next.js"],["▣","APP","Mobile"],["∿","AI","Models"],["◇","DATA","Datasets"],["⚠","CYBER","Defense"],["⌘","DEVOPS","Cloud"],["✓","QA","Verification"],["✦","RESEARCH","Experiments"]];
@@ -13,9 +11,9 @@ export default function Home(){
  const recognition=useRef<any>(null);
  useEffect(()=>{const t=setInterval(()=>setTime(new Date()),1000);return()=>clearInterval(t)},[]); useEffect(()=>{startWakeWord();return()=>recognition.current?.stop()},[]);
  useEffect(()=>{setOnline(navigator.onLine);const a=()=>setOnline(true),b=()=>setOnline(false);addEventListener("online",a);addEventListener("offline",b);return()=>{removeEventListener("online",a);removeEventListener("offline",b)}},[]);
- useEffect(()=>{(async()=>{try{let current=auth.currentUser;if(!current){const cred=await signInAnonymously(auth);current=cred.user}const token=await current.getIdToken();const h={authorization:`Bearer ${token}`};const r=await fetch("/api/companion",{headers:h});const d=await r.json();if(d.ok){setMemories(d.memories||[]);setPresence(d.presence||"present")}const g=await fetch("/api/knowledge-graph",{headers:h});const gd=await g.json();if(gd.ok)setGraph(gd);const ds=await fetch("/api/datasets",{headers:h});const dd=await ds.json();if(dd.ok)setDatasets(dd.datasets||[]);const ms=await fetch("/api/missions",{headers:h});const md=await ms.json();if(md.ok)setMissions(md.missions||[])}catch{}})()},[]);
+ useEffect(()=>{(async()=>{try{const session=await fetch("/api/auth/local/session",{cache:"no-store"}).then(r=>r.json());if(!session.authenticated){window.location.replace("/login");return}const h={};const r=await fetch("/api/companion",{headers:h});const d=await r.json();if(d.ok){setMemories(d.memories||[]);setPresence(d.presence||"present")}const g=await fetch("/api/knowledge-graph",{headers:h});const gd=await g.json();if(gd.ok)setGraph(gd);const ds=await fetch("/api/datasets",{headers:h});const dd=await ds.json();if(dd.ok)setDatasets(dd.datasets||[]);const ms=await fetch("/api/missions",{headers:h});const md=await ms.json();if(md.ok)setMissions(md.missions||[])}catch{}})()},[]);
  const greeting=useMemo(()=>time.getHours()<12?"GOOD MORNING":time.getHours()<18?"GOOD AFTERNOON":"GOOD EVENING",[time]);
- async function token(){let current=auth.currentUser;if(!current){const cred=await signInAnonymously(auth);current=cred.user}return current.getIdToken()}
+ async function token(){const session=await fetch("/api/auth/local/session",{cache:"no-store"}).then(r=>r.json());if(!session.authenticated){window.location.assign("/login");throw new Error("Local session required")}return "local-session"}
  async function refreshGraph(){try{setGraphLoading(true);const t=await token();const r=await fetch("/api/knowledge-graph",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${t}`},body:"{}"});const d=await r.json();if(d.ok){setGraph(d);setLiveAnnouncement("Knowledge graph updated.")}}finally{setGraphLoading(false)}}
  async function createMission(){if(!missionGoal.trim())return;try{setMissionLoading(true);const t=await token();const r=await fetch("/api/missions",{method:"POST",headers:{"content-type":"application/json",authorization:`Bearer ${t}`},body:JSON.stringify({title:"THARA Mission",goal:missionGoal,steps:["Understand goal","Plan actions","Execute approved steps","Verify result"]})});const d=await r.json();if(d.ok){setMissions(v=>[d.mission,...v]);setMissionGoal("");setLiveAnnouncement("Mission created and awaiting approval.")}}finally{setMissionLoading(false)}}
  async function requestMissionApproval(m:any){

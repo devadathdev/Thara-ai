@@ -1,8 +1,6 @@
 "use client";\nimport {LineClearGate} from "@/app/components/line-clear-gate";
 
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
-import { signInAnonymously } from "firebase/auth";
 
 type Tool = { id:string; name:string; category:string; description:string; capabilities:string[]; integration:string };
 type Data = { tools:Tool[]; workflows:string[]; summary:Record<string,number> };
@@ -15,7 +13,7 @@ export default function EngineeringWorkbench(){
   const [mission,setMission]=useState<any>(null);
   const [busy,setBusy]=useState(false); const [lineClear,setLineClear]=useState("");
 
-  async function token(){ let u=auth.currentUser; if(!u) u=(await signInAnonymously(auth)).user; return u.getIdToken(); }
+  async function token(){ const s=await fetch("/api/auth/local/session",{cache:"no-store"}).then(r=>r.json()); if(!s.authenticated){window.location.assign("/login");throw new Error("Local session required")} return "local-session"; }
 
   useEffect(()=>{(async()=>{try{const t=await token();const r=await fetch("/api/engineering",{headers:{authorization:"Bearer "+t}});setData(await r.json())}catch{} })()},[]);
 

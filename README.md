@@ -191,3 +191,8 @@ Set `THARA_APPROVAL_SECRET` to a random server-only value of at least 32 charact
 ### Verification
 
 Run `npm run test:autonomy` to compile and execute the focused autonomy, mission lifecycle, and approval-token tests. Also run `npx tsc --noEmit` and `npm run build` before merging. Those full-project checks are not represented as passed by this change.
+
+
+## Local PostgreSQL migration
+
+See [README-LOCAL.md](./README-LOCAL.md) for local PostgreSQL startup, schema setup and local owner bootstrap. Firebase removal is not complete until all feature routes have been migrated and no Firebase imports/dependencies remain.
