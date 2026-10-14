@@ -37,7 +37,7 @@ model Mission {
   ownerId String
   title String
   goal String
-  steps Json
+  plan Json
   planHash String
   actions Json
   status String

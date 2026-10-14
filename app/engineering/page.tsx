@@ -1,4 +1,5 @@
-"use client";\nimport {LineClearGate} from "@/app/components/line-clear-gate";
+"use client";
+import {LineClearGate} from "@/app/components/line-clear-gate";
 
 import { useEffect, useState } from "react";
 

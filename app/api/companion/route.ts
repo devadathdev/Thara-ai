@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { verifyBearerToken } from "@/lib/firebase-admin";
 
-const MAX_MEMORY = 4000;\nconst MAX_EVENT = 2000;
+const MAX_MEMORY = 4000;
+const MAX_EVENT = 2000;
 
 function db() {
   return getFirestore();
