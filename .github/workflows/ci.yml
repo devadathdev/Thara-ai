@@ -26,8 +26,12 @@ jobs:
         run: npm run test:autonomy
       - name: TypeScript check
         run: npx tsc --noEmit
+        env:
+          DATABASE_URL: postgresql://thara:ci-placeholder-password@127.0.0.1:54329/thara?schema=public
       - name: Production build
         run: npm run build
+        env:
+          DATABASE_URL: postgresql://thara:ci-placeholder-password@127.0.0.1:54329/thara?schema=public
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ci-placeholder-key
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: thara-ci.firebaseapp.com
