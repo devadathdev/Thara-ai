@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/firebase-admin";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { executeMission, orchestratorSummary, planMission } from "@/lib/agent-orchestrator";
 import { listTools } from "@/lib/agent-tools";
-import { getFirestore } from "firebase-admin/firestore";
+import { db } from "@/lib/db";
 
 export const runtime="nodejs";
 
@@ -17,7 +17,7 @@ export async function POST(req:Request){
   const objective=typeof body.objective==="string"?body.objective.trim():"";
   if(!objective||objective.length>4000)return NextResponse.json({error:"objective must be 1–4000 characters"},{status:400});
   const plan=planMission(objective),result=body.execute===true?await executeMission(plan):plan;
-  await getFirestore().collection("users").doc(user.uid).collection("tharaTelemetry").add({createdAt:Date.now(),event:"agent-mission",missionId:plan.id,execute:body.execute===true,status:result.status,stepCount:result.steps.length});
+  await db.telemetryEvent.create({data:{ownerId:user.uid,category:"agent-mission",payload:{missionId:plan.id,execute:body.execute===true,status:result.status,stepCount:result.steps.length},createdAt:Date.now()}});
   return NextResponse.json({ok:true,mission:result});
  }catch{return NextResponse.json({error:"Agent orchestration unavailable"},{status:502})}
 }

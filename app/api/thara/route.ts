@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/firebase-admin";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { THARA_CAPABILITIES, capabilitySummary, routeCapability, getCapabilityTelemetry } from "@/lib/thara-v5";
-import { getFirestore } from "firebase-admin/firestore";
+import { db } from "@/lib/db";
 import { ENGINEERING_TOOLS, ENGINEERING_WORKFLOWS, engineeringToolSummary, routeEngineering } from "@/lib/engineering";
 import { planEngineeringMission } from "@/lib/engineering-planner";
 import { allTharaCapabilities, completeCapabilitySummary, capabilityExecutionSummary, getMasterCapabilities } from "@/lib/thara-complete";
@@ -29,9 +29,7 @@ export async function POST(req: Request) {
     const engineering = routeEngineering(message);
     const engineeringMission = planEngineeringMission(message);
     const autonomy = buildAutonomyPlan(message);
-    await getFirestore().collection("users").doc(user.uid).collection("tharaTelemetry").add({
-      createdAt: Date.now(), event:"capability-route", domains, messageLength:message.length, success:true
-    });
+    await db.telemetryEvent.create({data:{ownerId:user.uid,category:"capability-route",payload:{domains,messageLength:message.length,success:true},createdAt:Date.now()}});
     return NextResponse.json({ok:true,domains,engineering,engineeringMission,autonomy,capabilities:THARA_CAPABILITIES.filter(c=>domains.includes(c.domain)),matchedCompleteCapabilities:allTharaCapabilities().filter(c=>domains.includes(c.domain))});
   } catch {
     return NextResponse.json({error:"Capability service unavailable"},{status:502});

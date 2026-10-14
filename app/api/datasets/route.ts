@@ -1,25 +1,8 @@
 export const runtime="nodejs";
-import {NextResponse} from "next/server";
-import {getFirestore} from "firebase-admin/firestore";
-import {verifyBearerToken} from "@/lib/firebase-admin";
-import {DATASET_SOURCES,normalizeDataset,datasetAllowedForIndexing} from "@/lib/dataset-hub";
-
-export async function GET(req:Request){
-  try{
-    const user=await verifyBearerToken(req);
-    const snap=await getFirestore().collection("users").doc(user.uid).collection("datasets").orderBy("createdAt","desc").limit(100).get();
-    return NextResponse.json({ok:true,sources:DATASET_SOURCES,datasets:snap.docs.map(d=>d.data())},{headers:{"Cache-Control":"no-store"}});
-  }catch(e){console.error("datasets_get_error",e);return NextResponse.json({error:"Dataset hub unavailable"},{status:502});}
-}
-
-export async function POST(req:Request){
-  try{
-    const user=await verifyBearerToken(req);
-    const body=await req.json();
-    const dataset=normalizeDataset(body);
-    if(!datasetAllowedForIndexing(dataset)) return NextResponse.json({error:"Dataset URL or license is not eligible for indexing. Review provenance and license first."},{status:400});
-    const ref=getFirestore().collection("users").doc(user.uid).collection("datasets").doc(dataset.id);
-    await ref.set({...dataset,createdAt:Date.now(),updatedAt:Date.now()});
-    return NextResponse.json({ok:true,dataset});
-  }catch(e){console.error("datasets_post_error",e);return NextResponse.json({error:"Unable to register dataset"},{status:502});}
-}
+import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
+import { db } from "@/lib/db";
+import { verifyBearerToken } from "@/lib/local-auth";
+import { DATASET_SOURCES, normalizeDataset, datasetAllowedForIndexing } from "@/lib/dataset-hub";
+export async function GET(req:Request){try{const user=await verifyBearerToken(req);const rows=await db.dataset.findMany({where:{ownerId:user.uid},orderBy:{createdAt:"desc"},take:100});return NextResponse.json({ok:true,sources:DATASET_SOURCES,datasets:rows.map(r=>r.data)},{headers:{"Cache-Control":"no-store"}})}catch(e){console.error("datasets_get_error",e);return NextResponse.json({error:"Dataset hub unavailable"},{status:503})}}
+export async function POST(req:Request){try{const user=await verifyBearerToken(req),body=await req.json(),dataset=normalizeDataset(body);if(!datasetAllowedForIndexing(dataset))return NextResponse.json({error:"Dataset URL or license is not eligible for indexing. Review provenance and license first."},{status:400});const now=Date.now(),existing=await db.dataset.findFirst({where:{id:dataset.id,ownerId:user.uid}}),saved={...dataset,createdAt:existing?.createdAt??now,updatedAt:now};await db.dataset.upsert({where:{id:dataset.id},create:{id:dataset.id,ownerId:user.uid,provider:dataset.source,title:dataset.name,status:dataset.status,data:saved as unknown as Prisma.InputJsonValue,createdAt:now,updatedAt:now},update:{provider:dataset.source,title:dataset.name,status:dataset.status,data:saved as unknown as Prisma.InputJsonValue,updatedAt:now}});return NextResponse.json({ok:true,dataset:saved})}catch(e){console.error("datasets_post_error",e);return NextResponse.json({error:"Unable to register dataset"},{status:503})}}
