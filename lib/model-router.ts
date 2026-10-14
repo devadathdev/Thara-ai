@@ -1,4 +1,4 @@
-type Provider = "openrouter" | "gemini";
+type Provider = "openrouter" | "gemini" | "local";
 export type ModelMessage = { role: string; content: any };
 export type ProviderAttempt = {
   provider: Provider;
@@ -68,6 +68,28 @@ async function readProviderError(response: Response, provider: Provider) {
 }
 
 export async function callModel(provider: Provider, model: string, messages: ModelMessage[]): Promise<string> {
+  if (provider === "local") {
+    const configuredUrl = process.env.THARA_LOCAL_MODEL_URL;
+    if (!configuredUrl) throw new ProviderError("THARA_LOCAL_MODEL_URL is not configured", "missing_key");
+    let endpoint: URL;
+    try {
+      endpoint = new URL(configuredUrl);
+      if (!["http:", "https:"].includes(endpoint.protocol) || endpoint.username || endpoint.password || endpoint.hash) throw new Error("Unsupported endpoint URL");
+    } catch { throw new ProviderError("THARA_LOCAL_MODEL_URL must be a valid HTTP(S) endpoint", "provider_error"); }
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (process.env.THARA_LOCAL_MODEL_API_KEY) headers.Authorization = "Bearer " + process.env.THARA_LOCAL_MODEL_API_KEY;
+    const response = await fetchWithTimeout(endpoint, {
+      method: "POST", headers,
+      body: JSON.stringify({ model, messages, temperature: 0.2, max_tokens: maxOutputTokens(), stream: false }),
+    });
+    if (!response.ok) await readProviderError(response, provider);
+    const data = await response.json();
+    const content = data?.choices?.[0]?.message?.content;
+    const text = typeof content === "string" ? content.trim() : "";
+    if (!text) throw new ProviderError("Local model returned an empty response", "empty_response");
+    return text;
+  }
+
   if (provider === "openrouter") {
     if (!process.env.OPENROUTER_API_KEY) {
       throw new ProviderError("OPENROUTER_API_KEY is not configured", "missing_key");
@@ -129,7 +151,12 @@ function fallbackCandidates(): Array<{ provider: Provider; model: string }> {
     { provider: "gemini", model: fastModel },
     { provider: "openrouter", model: MODEL_ROLES.orchestrator },
     { provider: "openrouter", model: "openrouter/free" },
-  ];
+  ];  // Local inference is opt-in and configured server-side; cloud fallbacks remain available.
+  if (process.env.THARA_LOCAL_MODEL_URL) {
+    const local = { provider: "local" as const, model: process.env.THARA_LOCAL_MODEL_NAME || "local-model" };
+    if (process.env.THARA_PREFER_LOCAL === "true") candidates.unshift(local);
+    else candidates.push(local);
+  }
 
   // Avoid calling the exact same provider/model pair twice when environment
   // configuration makes the orchestrator model equal to the free fallback.
