@@ -12,7 +12,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:dev": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test:postgres": "tsc --target ES2022 --module commonjs --moduleResolution node --strict --skipLibCheck --esModuleInterop --rootDir . --outDir .thara-test-build tests/postgres.integration.test.ts && node --test .thara-test-build/tests/postgres.integration.test.js"
   },
   "dependencies": {
     "@prisma/client": "6.19.0",

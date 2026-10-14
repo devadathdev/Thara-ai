@@ -46,6 +46,8 @@ jobs:
         run: npx prisma generate
       - name: Apply PostgreSQL migrations
         run: npx prisma migrate deploy
+      - name: PostgreSQL schema and approval replay integration test
+        run: npm run test:postgres
       - name: Focused autonomy, mission, approval and model-routing tests
         run: npm run test:autonomy
       - name: TypeScript check
