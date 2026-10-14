@@ -1,5 +1,5 @@
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
-import type { MissionAction } from "@/lib/orchestrator/mission";
+import type { MissionAction } from "./mission";
 
 const TOKEN_TTL_MS = 5 * 60_000;
 type ApprovalClaims = {
