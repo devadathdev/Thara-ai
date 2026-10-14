@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { auth } from "@/lib/firebase";
-import { signInAnonymously } from "firebase/auth";
 
 const domains = [
   "intelligence","memory","builder","research","voice","multimodal","security","performance",
@@ -49,9 +47,9 @@ export default function TharaV7CommandCenter() {
   const [clock,setClock] = useState(new Date());
 
   async function token() {
-    let u = auth.currentUser;
-    if (!u) u = (await signInAnonymously(auth)).user;
-    return u.getIdToken();
+    const session = await fetch("/api/auth/local/session",{cache:"no-store"}).then(r=>r.json());
+    if (!session.authenticated) { window.location.assign("/login"); throw new Error("Local session required"); }
+    return "local-session";
   }
 
   async function load() {
@@ -59,7 +57,7 @@ export default function TharaV7CommandCenter() {
       const t = await token();
       const r = await fetch("/api/thara",{headers:{authorization:"Bearer "+t}});
       setData(await r.json());
-    } finally { setLoading(false); }
+    } catch { window.location.assign("/login"); } finally { setLoading(false); }
   }
 
   useEffect(()=>{ load(); const id=setInterval(()=>setClock(new Date()),1000); return()=>clearInterval(id); },[]);
@@ -157,7 +155,7 @@ export default function TharaV7CommandCenter() {
               <div className="glass rounded-[30px] p-5">
                 <div className="flex items-center justify-between"><span className="text-[9px] tracking-[.3em] text-[#63D8FF]">SYSTEM STATE</span><span className="font-mono text-[9px] text-[#63D8FF]">LIVE</span></div>
                 <div className="mt-5 grid grid-cols-2 gap-2">
-                  {[["CORE","ONLINE"],["MEMORY","ONLINE"],["ROUTER",data?.runtime?.localInferenceConfigured?(data?.runtime?.preferLocal?"LOCAL PREFERRED":"HYBRID READY"):(data?.runtime?.cloudInferenceConfigured?"CLOUD ROUTING":"CONFIG REQUIRED")],["SECURITY","GUARDED"],["ENGINEERING","PLAN-ONLY TOOLS"],["TELEMETRY",telemetry.length?"ACTIVE":"STANDBY"]].map(([a,b])=><div key={a} className="rounded-xl border border-white/8 bg-black/20 p-3"><div className="flex items-center gap-2"><span className="status-dot"/><span className="text-[8px] text-white/40">{a}</span></div><div className="mt-2 text-[10px] text-[#63D8FF]">{b}</div></div>)}
+                  {[["CORE","ONLINE"],["MEMORY","ONLINE"],["ROUTER",data?.runtime?.localInferenceConfigured?(data?.runtime?.localOnly?"LOCAL ONLY":data?.runtime?.preferLocal?"LOCAL PREFERRED":"HYBRID READY"):(data?.runtime?.cloudInferenceConfigured?"CLOUD ROUTING":"CONFIG REQUIRED")],["SECURITY","GUARDED"],["ENGINEERING","PLAN-ONLY TOOLS"],["TELEMETRY",telemetry.length?"ACTIVE":"STANDBY"]].map(([a,b])=><div key={a} className="rounded-xl border border-white/8 bg-black/20 p-3"><div className="flex items-center gap-2"><span className="status-dot"/><span className="text-[8px] text-white/40">{a}</span></div><div className="mt-2 text-[10px] text-[#63D8FF]">{b}</div></div>)}
                 </div>
               </div>
             </div>
@@ -203,7 +201,7 @@ export default function TharaV7CommandCenter() {
 
           {active==="engineering" && <section className="mt-3 grid gap-3 lg:grid-cols-[1.1fr_.9fr]">
             <div className="glass rounded-[28px] p-6"><div className="text-[9px] tracking-[.35em] text-[#63D8FF]">ENGINEERING COMMAND</div><h2 className="mt-2 text-3xl font-bold">CAD → CAE → CAM → IIoT</h2><p className="mt-2 text-xs leading-5 text-white/35">Engineering workflows remain separated from direct machine execution. Generated artifacts and simulation plans are validated before consequential action.</p><div className="mt-6 grid grid-cols-2 gap-2">{Object.entries(data?.engineering?.summary||{}).map(([k,v])=><div key={k} className="rounded-xl border border-white/8 bg-black/20 p-4"><div className="text-[8px] text-white/35">{k.toUpperCase()}</div><div className="mt-1 font-mono text-xl text-[#63D8FF]">{String(v)}</div></div>)}</div></div>
-            <div className="glass rounded-[28px] p-6"><div className="text-[9px] tracking-[.35em] text-[#BBAAFF]">EXECUTION BOUNDARY</div><div className="mt-5 space-y-3">{["Requirements","Parametric CAD","Simulation","Optimization","Manufacturing plan","Digital twin","Telemetry"].map((x,i)=><div key={x} className="flex items-center gap-3 rounded-xl border border-white/8 bg-black/20 p-3"><span className="grid h-7 w-7 place-items-center rounded-lg bg-[#168CFF]/10 font-mono text-[8px] text-[#63D8FF]">0{i+1}</span><span className="text-[9px]">{x}</span><span className="ml-auto text-[7px] text-[#63D8FF]">{i<5?"READY":"GUARDED"}</span></div>)}</div></div>
+            <div className="glass rounded-[28px] p-6"><div className="text-[9px] tracking-[.35em] text-[#BBAAFF]">EXECUTION BOUNDARY</div><div className="mt-5 space-y-3">{["Requirements","Parametric CAD","Simulation","Optimization","Manufacturing plan","Digital twin","Telemetry"].map((x:string,i:number)=><div key={x} className="flex items-center gap-3 rounded-xl border border-white/8 bg-black/20 p-3"><span className="grid h-7 w-7 place-items-center rounded-lg bg-[#168CFF]/10 font-mono text-[8px] text-[#63D8FF]">0{i+1}</span><span className="text-[9px]">{x}</span><span className="ml-auto text-[7px] text-[#63D8FF]">{i<5?"READY":"GUARDED"}</span></div>)}</div></div>
           </section>}
 
           {active==="security" && <section className="mt-3 grid gap-3 lg:grid-cols-2">
@@ -212,7 +210,7 @@ export default function TharaV7CommandCenter() {
           </section>}
 
           {active==="telemetry" && <section className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_.8fr]">
-            <div className="glass rounded-[28px] p-6"><div className="flex items-center justify-between"><div><div className="text-[9px] tracking-[.35em] text-[#63D8FF]">TELEMETRY STREAM</div><div className="mt-1 text-xs text-white/35">Recorded THARA capability events</div></div><button onClick={load} className="rounded-xl border border-[#39B9FF]/20 px-3 py-2 text-[8px] text-[#63D8FF]">REFRESH</button></div><div className="mt-5 space-y-2">{telemetry.length?telemetry.slice(0,20).map((t:any,i)=><div key={i} className="grid grid-cols-[70px_1fr_auto] gap-3 rounded-xl border border-white/8 bg-black/20 p-3 text-[8px]"><span className="font-mono text-white/25">{new Date(t.createdAt||Date.now()).toLocaleTimeString()}</span><span>{t.event||"capability event"}</span><span className="text-[#63D8FF]">{t.success===false?"FAILED":"OK"}</span></div>):<div className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-xs text-white/25">No telemetry events returned for this session.</div>}</div></div>
+            <div className="glass rounded-[28px] p-6"><div className="flex items-center justify-between"><div><div className="text-[9px] tracking-[.35em] text-[#63D8FF]">TELEMETRY STREAM</div><div className="mt-1 text-xs text-white/35">Recorded THARA capability events</div></div><button onClick={load} className="rounded-xl border border-[#39B9FF]/20 px-3 py-2 text-[8px] text-[#63D8FF]">REFRESH</button></div><div className="mt-5 space-y-2">{telemetry.length?telemetry.slice(0,20).map((t:any,i:number)=><div key={i} className="grid grid-cols-[70px_1fr_auto] gap-3 rounded-xl border border-white/8 bg-black/20 p-3 text-[8px]"><span className="font-mono text-white/25">{new Date(t.createdAt||Date.now()).toLocaleTimeString()}</span><span>{t.event||"capability event"}</span><span className="text-[#63D8FF]">{t.success===false?"FAILED":"OK"}</span></div>):<div className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-xs text-white/25">No telemetry events returned for this session.</div>}</div></div>
             <div className="glass rounded-[28px] p-6"><div className="text-[9px] tracking-[.35em] text-[#63D8FF]">SYSTEM METRICS</div><div className="mt-5 space-y-4">{[["CAPABILITIES",total],["MASTER",master],["READY",ready],["FOUNDATION",foundation],["DOMAINS",onlineDomains]].map(([k,v])=><div key={String(k)} className="flex items-end justify-between border-b border-white/8 pb-3"><span className="text-[8px] text-white/35">{k}</span><span className="font-mono text-xl text-white">{v}</span></div>)}</div></div>
           </section>}
         </div>

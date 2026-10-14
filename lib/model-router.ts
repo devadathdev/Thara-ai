@@ -35,6 +35,10 @@ function timeoutMs() {
   return boundedEnvNumber("THARA_MODEL_TIMEOUT_MS", DEFAULT_TIMEOUT_MS, 1_000, 60_000);
 }
 
+function localTimeoutMs() {
+  return boundedEnvNumber("THARA_LOCAL_MODEL_TIMEOUT_MS", 120_000, 1_000, 180_000);
+}
+
 function maxOutputTokens() {
   return boundedEnvNumber("THARA_MAX_OUTPUT_TOKENS", DEFAULT_MAX_OUTPUT_TOKENS, 64, 8_192);
 }
@@ -56,8 +60,8 @@ function classifyError(error: unknown): ProviderAttempt["errorCode"] {
   return "unknown";
 }
 
-async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}) {
-  return fetch(input, { ...init, signal: AbortSignal.timeout(timeoutMs()) });
+async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}, durationMs = timeoutMs()) {
+  return fetch(input, { ...init, signal: AbortSignal.timeout(durationMs) });
 }
 
 async function readProviderError(response: Response, provider: Provider) {
@@ -69,19 +73,21 @@ async function readProviderError(response: Response, provider: Provider) {
 
 export async function callModel(provider: Provider, model: string, messages: ModelMessage[]): Promise<string> {
   if (provider === "local") {
-    const configuredUrl = process.env.THARA_LOCAL_MODEL_URL;
+    const localOnly = process.env.THARA_LOCAL_ONLY !== "false";
+    const configuredUrl = process.env.THARA_LOCAL_MODEL_URL || (localOnly ? "http://127.0.0.1:11434/v1/chat/completions" : "");
     if (!configuredUrl) throw new ProviderError("THARA_LOCAL_MODEL_URL is not configured", "missing_key");
     let endpoint: URL;
     try {
       endpoint = new URL(configuredUrl);
       if (!["http:", "https:"].includes(endpoint.protocol) || endpoint.username || endpoint.password || endpoint.hash) throw new Error("Unsupported endpoint URL");
+      if (localOnly && !["localhost", "127.0.0.1", "::1", "[::1]"].includes(endpoint.hostname)) throw new Error("Local-only mode requires a loopback model endpoint");
     } catch { throw new ProviderError("THARA_LOCAL_MODEL_URL must be a valid HTTP(S) endpoint", "provider_error"); }
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (process.env.THARA_LOCAL_MODEL_API_KEY) headers.Authorization = "Bearer " + process.env.THARA_LOCAL_MODEL_API_KEY;
     const response = await fetchWithTimeout(endpoint, {
       method: "POST", headers,
       body: JSON.stringify({ model, messages, temperature: 0.2, max_tokens: maxOutputTokens(), stream: false }),
-    });
+    }, localTimeoutMs());
     if (!response.ok) await readProviderError(response, provider);
     const data = await response.json();
     const content = data?.choices?.[0]?.message?.content;
@@ -145,21 +151,22 @@ export async function callModel(provider: Provider, model: string, messages: Mod
   return text;
 }
 
-function fallbackCandidates(): Array<{ provider: Provider; model: string }> {
+export function getModelFallbackCandidates(): Array<{ provider: Provider; model: string }> {
+  const localOnly = process.env.THARA_LOCAL_ONLY !== "false";
+  const localModel = process.env.THARA_LOCAL_MODEL_NAME || "llama3.2:3b";
+  if (localOnly) return [{ provider: "local", model: localModel }];
+
   const fastModel = process.env.THARA_FAST_MODEL || process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
   const candidates: Array<{ provider: Provider; model: string }> = [
     { provider: "gemini", model: fastModel },
     { provider: "openrouter", model: MODEL_ROLES.orchestrator },
     { provider: "openrouter", model: "openrouter/free" },
-  ];  // Local inference is opt-in and configured server-side; cloud fallbacks remain available.
+  ];
   if (process.env.THARA_LOCAL_MODEL_URL) {
-    const local = { provider: "local" as const, model: process.env.THARA_LOCAL_MODEL_NAME || "local-model" };
+    const local = { provider: "local" as const, model: localModel };
     if (process.env.THARA_PREFER_LOCAL === "true") candidates.unshift(local);
     else candidates.push(local);
   }
-
-  // Avoid calling the exact same provider/model pair twice when environment
-  // configuration makes the orchestrator model equal to the free fallback.
   const seen = new Set<string>();
   return candidates.filter(({ provider, model }) => {
     const key = `${provider}:${model}`;
@@ -177,7 +184,7 @@ function fallbackCandidates(): Array<{ provider: Provider; model: string }> {
 export async function orchestrateWithTrace(messages: ModelMessage[]): Promise<OrchestrationResult> {
   const attempts: ProviderAttempt[] = [];
 
-  for (const candidate of fallbackCandidates()) {
+  for (const candidate of getModelFallbackCandidates()) {
     const startedAt = Date.now();
     try {
       const text = await callModel(candidate.provider, candidate.model, messages);

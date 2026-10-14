@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/firebase-admin";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { planPerception, type PerceptionModality } from "@/lib/perception";
 
 export const runtime="nodejs";

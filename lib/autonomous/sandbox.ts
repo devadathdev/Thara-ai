@@ -13,9 +13,10 @@ export async function runSandboxedCommand(command:string,timeoutMs=30_000):Promi
  const id=randomUUID(),dir=await mkdtemp(join(tmpdir(),"thara-sandbox-")),started=Date.now();
  try{
   return await new Promise((resolve,reject)=>{
-   const child=spawn("sh",["-lc",command],{cwd:dir,env:{PATH:process.env.PATH||"/usr/bin:/bin",HOME:dir,LANG:"C",TMPDIR:dir},timeout:timeoutMs});
-   let stdout="",stderr=""; child.stdout.on("data",d=>stdout+=d); child.stderr.on("data",d=>stderr+=d);
-   child.on("error",reject); child.on("close",code=>resolve({id,code:code??-1,stdout:stdout.slice(0,12000),stderr:stderr.slice(0,12000),durationMs:Date.now()-started}));
+   const child=spawn("sh",["-lc",command],{cwd:dir,env:{PATH:process.env.PATH||"/usr/bin:/bin",HOME:dir,LANG:"C",TMPDIR:dir,NODE_ENV:"production"}});
+   const killTimer=setTimeout(()=>child.kill("SIGKILL"),Math.max(1000,timeoutMs));
+   let stdout="",stderr=""; child.stdout.on("data",(d:Buffer)=>stdout+=d.toString()); child.stderr.on("data",(d:Buffer)=>stderr+=d.toString());
+   child.on("error",(error)=>{clearTimeout(killTimer);reject(error)}); child.on("close",(code)=>{clearTimeout(killTimer);resolve({id,code:code??-1,stdout:stdout.slice(0,12000),stderr:stderr.slice(0,12000),durationMs:Date.now()-started})});
   });
  }finally{await rm(dir,{recursive:true,force:true})}
 }

@@ -1,44 +1,5 @@
 import { generateAuthenticationOptions, generateRegistrationOptions } from "@simplewebauthn/server";
-import { getFirestore } from "firebase-admin/firestore";
-
-export function webAuthnConfig(req: Request) {
-  const url = new URL(req.url);
-  return {
-    rpID: process.env.THARA_WEBAUTHN_RP_ID || url.hostname,
-    origin: process.env.THARA_WEBAUTHN_ORIGIN || url.origin,
-    rpName: process.env.THARA_WEBAUTHN_RP_NAME || "THARA AI",
-  };
-}
-
-export async function registrationOptions(uid: string, req: Request) {
-  const db=getFirestore();
-  const existing=await db.collection("users").doc(uid).collection("lineClearCredentials").get();
-  const {rpID,rpName}=webAuthnConfig(req);
-  const options=await generateRegistrationOptions({
-    rpName,
-    rpID,
-    userName: uid,
-    userDisplayName: "THARA User",
-    userID: new TextEncoder().encode(uid),
-    attestationType:"none",
-    supportedAlgorithmIDs:[-7,-257],
-    excludeCredentials: existing.docs.map(d=>({id:d.id,transports:d.data().transports||[]})),
-    authenticatorSelection:{residentKey:"required",userVerification:"required",authenticatorAttachment:"platform"}
-  });
-  await db.collection("users").doc(uid).collection("lineClearChallenges").doc("registration").set({challenge:options.challenge,createdAt:Date.now()});
-  return options;
-}
-
-export async function authenticationOptions(uid: string, req: Request) {
-  const db=getFirestore();
-  const existing=await db.collection("users").doc(uid).collection("lineClearCredentials").get();
-  if(existing.empty) throw new Error("No Fingerprint Line Clear credential is registered");
-  const {rpID}=webAuthnConfig(req);
-  const options=await generateAuthenticationOptions({
-    rpID,
-    userVerification:"required",
-    allowCredentials:existing.docs.map(d=>({id:d.id,transports:d.data().transports||[]})),
-  });
-  await db.collection("users").doc(uid).collection("lineClearChallenges").doc("authentication").set({challenge:options.challenge,createdAt:Date.now()});
-  return options;
-}
+import { db } from "@/lib/db";
+export function webAuthnConfig(req:Request){const url=new URL(req.url);return{rpID:process.env.THARA_WEBAUTHN_RP_ID||url.hostname,origin:process.env.THARA_WEBAUTHN_ORIGIN||url.origin,rpName:process.env.THARA_WEBAUTHN_RP_NAME||"THARA AI"};}
+export async function registrationOptions(uid:string,req:Request){const existing=await db.webAuthnCredential.findMany({where:{ownerId:uid}});const{rpID,rpName}=webAuthnConfig(req);const options=await generateRegistrationOptions({rpName,rpID,userName:uid,userDisplayName:"THARA User",userID:new TextEncoder().encode(uid),attestationType:"none",supportedAlgorithmIDs:[-7,-257],excludeCredentials:existing.map(d=>({id:d.id,transports:(d.transports as string[])||[]})),authenticatorSelection:{residentKey:"required",userVerification:"required",authenticatorAttachment:"platform"}});await db.webAuthnChallenge.upsert({where:{id:uid+":registration"},create:{id:uid+":registration",ownerId:uid,challenge:options.challenge,createdAt:Date.now(),mode:"registration"},update:{challenge:options.challenge,createdAt:Date.now(),mode:"registration"}});return options;}
+export async function authenticationOptions(uid:string,req:Request){const existing=await db.webAuthnCredential.findMany({where:{ownerId:uid}});if(!existing.length)throw new Error("No Fingerprint Line Clear credential is registered");const{rpID}=webAuthnConfig(req);const options=await generateAuthenticationOptions({rpID,userVerification:"required",allowCredentials:existing.map(d=>({id:d.id,transports:(d.transports as string[])||[]}))});await db.webAuthnChallenge.upsert({where:{id:uid+":authentication"},create:{id:uid+":authentication",ownerId:uid,challenge:options.challenge,createdAt:Date.now(),mode:"authentication"},update:{challenge:options.challenge,createdAt:Date.now(),mode:"authentication"}});return options;}

@@ -97,7 +97,7 @@ Telemetry <-----------------------+
 
 ## Security Architecture
 
-THARA uses authenticated APIs, server-side provider credentials, scoped Firestore access, rate limiting, prompt-injection defenses, bounded self-rewrite, sandboxed execution, and Fingerprint Line Clear protection for protected operations.
+THARA uses authenticated APIs, server-side provider credentials, PostgreSQL-backed owner-scoped persistence, rate limiting, prompt-injection defenses, bounded self-rewrite, sandboxed execution, and Fingerprint Line Clear protection for protected operations.
 
 High-impact physical operations remain behind the hardware gateway rather than being executed directly from the browser.
 
@@ -148,12 +148,12 @@ THARA will remain transparent about whether a command was **planned, simulated, 
 **GitHub:** https://github.com/devadathdev/Thara-ai
 
 **Project:** THARA AI  
-**Architecture:** Next.js + TypeScript + Firebase + server-side model routing  
+**Architecture:** Next.js + TypeScript + PostgreSQL + server-side model routing  
 **Interface:** Technical blue/cyan command center
 
 ## V6 Guarded Engineering Autonomy
 
-The V6 autonomy layer is additive to the existing Next.js + TypeScript + Firebase application.
+The V6 autonomy layer is additive to the existing Next.js + TypeScript + PostgreSQL application.
 
 ### Mission lifecycle
 
@@ -191,3 +191,13 @@ Set `THARA_APPROVAL_SECRET` to a random server-only value of at least 32 charact
 ### Verification
 
 Run `npm run test:autonomy` to compile and execute the focused autonomy, mission lifecycle, and approval-token tests. Also run `npx tsc --noEmit` and `npm run build` before merging. Those full-project checks are not represented as passed by this change.
+
+
+## Local PostgreSQL migration
+
+See [README-LOCAL.md](./README-LOCAL.md) for local PostgreSQL startup, schema setup and local owner bootstrap. Firebase removal is not complete until all feature routes have been migrated and no Firebase imports/dependencies remain.
+
+
+## Local-first migration
+
+The `migration/postgres-local-first` branch introduces PostgreSQL persistence, local owner sessions, and local-only inference by default. Follow [README-LOCAL.md](./README-LOCAL.md). The migration must pass CI and the remaining acceptance checks before it is treated as a stable release.

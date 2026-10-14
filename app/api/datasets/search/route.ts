@@ -1,5 +1,5 @@
 export const runtime="nodejs";
 import {NextResponse} from "next/server";
-import {verifyBearerToken} from "@/lib/firebase-admin";
+import {verifyBearerToken} from "@/lib/local-auth";
 import {searchHuggingFace,searchGitHub,directoryProviders} from "@/lib/datasets/providers";
 export async function POST(req:Request){try{await verifyBearerToken(req);const {query}=await req.json();const q=typeof query==="string"?query.trim():"";if(!q||q.length>500)return NextResponse.json({error:"Invalid dataset query"},{status:400});const s=await Promise.allSettled([searchHuggingFace(q),searchGitHub(q)]);const results=s.flatMap(x=>x.status==="fulfilled"?x.value:[]).concat(directoryProviders(q));return NextResponse.json({ok:true,results:[...new Map(results.map(x=>[x.provider+":"+x.id,x])).values()].slice(0,40),providers:["huggingface","github","uci","government"]});}catch(e){console.error("dataset_search_error",e);return NextResponse.json({error:"Dataset search unavailable"},{status:502});}}

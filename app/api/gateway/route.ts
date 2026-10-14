@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/firebase-admin";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { hardwareGatewaySummary, listGatewayDevices, registerGatewayDevice, executeGatewayCommand } from "@/lib/hardware-gateway";
 import { requireLineClearProof } from "@/lib/protected-auth";
 

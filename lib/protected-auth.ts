@@ -2,7 +2,7 @@ export const PROTECTED_AREAS = ["equipment-control","sentinel","private-memory",
 export type ProtectedArea = typeof PROTECTED_AREAS[number];
 
 export type AuthAssurance = {
-  method: "firebase" | "fingerprint-line-clear";
+  method: "local-session" | "fingerprint-line-clear";
   area: ProtectedArea;
   verifiedAt: number;
   assurance: "strong";

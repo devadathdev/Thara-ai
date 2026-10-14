@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+model Owner {
+  id String @id @default(cuid())
+  username String @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+  sessions Session[]
+  missions Mission[]
+  memories Memory[]
+  companionEvents CompanionEvent[]
+  datasets Dataset[]
+  knowledgeGraph KnowledgeGraphSnapshot?
+  telemetry TelemetryEvent[]
+  credentials WebAuthnCredential[]
+  challenges WebAuthnChallenge[]
+  approvals Approval[]
+  missionRuns MissionRun[]
+}
+model Session {
+  id String @id @default(cuid())
+  tokenHash String @unique
+  ownerId String
+  expiresAt Float
+  createdAt Float
+  lastSeenAt Float
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId, expiresAt])
+}
+model Mission {
+  id String @id
+  ownerId String
+  title String
+  goal String
+  plan Json
+  planHash String
+  actions Json
+  status String
+  approvalId String?
+  verification Json?
+  createdAt Float
+  updatedAt Float
+  verifiedAt Float?
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  runs MissionRun[]
+  approvals Approval[]
+  @@index([ownerId, updatedAt])
+}
+model Approval {
+  id String @id
+  ownerId String
+  missionId String
+  planHash String
+  actions Json
+  status String
+  requestedBy String
+  requestedAt Float
+  expiresAt Float
+  approvedBy String?
+  approvedAt Float?
+  tokenJti String?
+  tokenExpiresAt Float?
+  usedAt Float?
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  @@index([ownerId, missionId, status])
+}
+model MissionRun {
+  id String @id @default(cuid())
+  ownerId String
+  missionId String
+  action String
+  result Json
+  verification Json
+  createdAt Float
+  executionMode String
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  @@index([ownerId, missionId, createdAt])
+}
+model Memory {
+  id String @id @default(cuid())
+  ownerId String
+  content String
+  importance Float @default(0.5)
+  createdAt Float
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId, createdAt])
+}
+model CompanionEvent {
+  id String @id @default(cuid())
+  ownerId String
+  type String
+  message String
+  createdAt Float
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId, createdAt])
+}
+model Dataset {
+  id String @id
+  ownerId String
+  provider String?
+  title String?
+  status String?
+  data Json
+  createdAt Float
+  updatedAt Float
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId, createdAt])
+  @@index([ownerId, status])
+}
+model KnowledgeGraphSnapshot {
+  ownerId String @id
+  nodes Json
+  edges Json
+  updatedAt Float
+  memoryCount Int
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+}
+model TelemetryEvent {
+  id String @id @default(cuid())
+  ownerId String
+  category String
+  payload Json
+  createdAt Float
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId, category, createdAt])
+}
+model WebAuthnCredential {
+  id String @id
+  ownerId String
+  publicKey Json
+  counter Int
+  transports Json
+  createdAt Float
+  lastUsedAt Float?
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId])
+}
+model WebAuthnChallenge {
+  id String @id
+  ownerId String
+  challenge String
+  area String?
+  mode String?
+  createdAt Float
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  @@index([ownerId, createdAt])
+}
