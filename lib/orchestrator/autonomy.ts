@@ -129,7 +129,7 @@ export function buildAutonomyPlan(message: string, mode: AutonomyMode = configur
     repository_write: "Prepare a proposed diff and validation plan. Wait for explicit approval before writing repository files.",
     command_execution: "Show the exact command, expected effects, sandbox boundary, and rollback plan; wait for approval.",
     deployment: "Prepare a deployment plan, checks, rollback strategy, and target environment; wait for approval.",
-    hardware_control: "Keep the operation in simulation/planning until an authenticated local gateway, operator approval, and safety checks are confirmed.",
+    hardware_control: "This API does not actuate hardware. Keep the operation in simulation/planning until an authenticated local gateway, operator approval, and safety checks are confirmed.",
     destructive_operation: "Explain the impact and safer alternative; do not perform the destructive action.",
     credential_disclosure: "Do not display credentials; use a secret manager or rotation workflow."
   };
