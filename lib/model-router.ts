@@ -145,7 +145,7 @@ export async function callModel(provider: Provider, model: string, messages: Mod
   return text;
 }
 
-function fallbackCandidates(): Array<{ provider: Provider; model: string }> {
+export function getModelFallbackCandidates(): Array<{ provider: Provider; model: string }> {
   const fastModel = process.env.THARA_FAST_MODEL || process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
   const candidates: Array<{ provider: Provider; model: string }> = [
     { provider: "gemini", model: fastModel },
@@ -177,7 +177,7 @@ function fallbackCandidates(): Array<{ provider: Provider; model: string }> {
 export async function orchestrateWithTrace(messages: ModelMessage[]): Promise<OrchestrationResult> {
   const attempts: ProviderAttempt[] = [];
 
-  for (const candidate of fallbackCandidates()) {
+  for (const candidate of getModelFallbackCandidates()) {
     const startedAt = Date.now();
     try {
       const text = await callModel(candidate.provider, candidate.model, messages);
