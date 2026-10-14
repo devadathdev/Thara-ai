@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const mission = missionSnapshot.data() as MissionRecord;
 
     if (action === "request") {
-      if (mission.status !== "awaiting_approval" && mission.status !== "verification_failed" && mission.status !== "failed") {
+      if (mission.status !== "awaiting_approval" && mission.status !== "approved" && mission.status !== "verification_failed" && mission.status !== "failed") {
         return NextResponse.json({ error: "Mission is not awaiting approval" }, { status: 409 });
       }
       const approvalId = randomUUID();
