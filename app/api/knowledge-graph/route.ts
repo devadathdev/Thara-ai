@@ -21,8 +21,8 @@ export async function POST(req: Request) {
     const filtered = memoryIds.length ? memories.filter(m => memoryIds.includes(m.id)) : memories;
     const graph = await enrichKnowledgeGraph(filtered, buildKnowledgeGraph(filtered));
     await db.knowledgeGraphSnapshot.upsert({ where: { ownerId: user.uid }, create: {
-      ownerId: user.uid, nodes: graph.nodes as unknown as Prisma.InputJsonValue, edges: graph.edges as unknown as Prisma.InputJsonValue, updatedAt: Date.now(), memoryCount: filtered.length
-    }, update: { nodes: graph.nodes as unknown as Prisma.InputJsonValue, edges: graph.edges as unknown as Prisma.InputJsonValue, updatedAt: Date.now(), memoryCount: filtered.length } });
+      ownerId: user.uid, nodes: JSON.parse(JSON.stringify(graph.nodes)) as Prisma.InputJsonValue, edges: JSON.parse(JSON.stringify(graph.edges)) as Prisma.InputJsonValue, updatedAt: Date.now(), memoryCount: filtered.length
+    }, update: { nodes: JSON.parse(JSON.stringify(graph.nodes)) as Prisma.InputJsonValue, edges: JSON.parse(JSON.stringify(graph.edges)) as Prisma.InputJsonValue, updatedAt: Date.now(), memoryCount: filtered.length } });
     return NextResponse.json({ ok: true, ...graph }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) { console.error("knowledge_graph_post_error", error); return NextResponse.json({ error: "Unable to update knowledge graph" }, { status: 503 }); }
 }

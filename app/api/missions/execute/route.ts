@@ -53,11 +53,11 @@ export async function POST(req: Request) {
     await db.$transaction(async tx => {
       await tx.mission.update({ where: { id: missionId }, data: {
         status, updatedAt: Date.now(), verifiedAt: verification.passed ? verification.completedAt : null,
-        verification: verification as unknown as Prisma.InputJsonValue
+        verification: JSON.parse(JSON.stringify(verification)) as Prisma.InputJsonValue
       }});
       await tx.missionRun.create({ data: {
-        ownerId, missionId, action, result: result as Prisma.InputJsonValue,
-        verification: verification as unknown as Prisma.InputJsonValue,
+        ownerId, missionId, action, result: JSON.parse(JSON.stringify(result)) as Prisma.InputJsonValue,
+        verification: JSON.parse(JSON.stringify(verification)) as Prisma.InputJsonValue,
         createdAt: Date.now(), executionMode: "bounded-in-process"
       }});
     });
