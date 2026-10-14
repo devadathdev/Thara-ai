@@ -157,7 +157,7 @@ export default function TharaV7CommandCenter() {
               <div className="glass rounded-[30px] p-5">
                 <div className="flex items-center justify-between"><span className="text-[9px] tracking-[.3em] text-[#63D8FF]">SYSTEM STATE</span><span className="font-mono text-[9px] text-[#63D8FF]">LIVE</span></div>
                 <div className="mt-5 grid grid-cols-2 gap-2">
-                  {[["CORE","ONLINE"],["MEMORY","ONLINE"],["ROUTER","ONLINE"],["SECURITY","GUARDED"],["ENGINEERING","READY"],["TELEMETRY",telemetry.length?"ACTIVE":"STANDBY"]].map(([a,b])=><div key={a} className="rounded-xl border border-white/8 bg-black/20 p-3"><div className="flex items-center gap-2"><span className="status-dot"/><span className="text-[8px] text-white/40">{a}</span></div><div className="mt-2 text-[10px] text-[#63D8FF]">{b}</div></div>)}
+                  {[["CORE","ONLINE"],["MEMORY","ONLINE"],["ROUTER",data?.runtime?.localInferenceConfigured?(data?.runtime?.preferLocal?"LOCAL PREFERRED":"HYBRID READY"):(data?.runtime?.cloudInferenceConfigured?"CLOUD ROUTING":"CONFIG REQUIRED")],["SECURITY","GUARDED"],["ENGINEERING","PLAN-ONLY TOOLS"],["TELEMETRY",telemetry.length?"ACTIVE":"STANDBY"]].map(([a,b])=><div key={a} className="rounded-xl border border-white/8 bg-black/20 p-3"><div className="flex items-center gap-2"><span className="status-dot"/><span className="text-[8px] text-white/40">{a}</span></div><div className="mt-2 text-[10px] text-[#63D8FF]">{b}</div></div>)}
                 </div>
               </div>
             </div>
