@@ -38,7 +38,7 @@ function classifyAction(message: string): AutonomyAction {
   ) return "credential_disclosure";
 
   if (
-    /\b(start|stop|reset|move|operate|control|actuate|energize|write to|send (?:a )?command to)\b.{0,80}\b(robot|plc|machine|motor|actuator|hardware|industrial device|factory equipment|gateway)\b/.test(text) ||
+    /\b(start|stop|reset|move|operate|control|actuate|activate|turn on|power on|energize|write to|send (?:a )?command to)\b.{0,80}\b(robot|plc|machine|motor|actuator|hardware|industrial device|factory equipment|gateway)\b/.test(text) ||
     /\b(robot|plc|motor|actuator|industrial machine|factory equipment)\b.{0,80}\b(start|stop|reset|move|operate|control|actuate|energize)\b/.test(text)
   ) return "hardware_control";
 
