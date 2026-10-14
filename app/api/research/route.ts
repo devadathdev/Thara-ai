@@ -1,7 +1,7 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/firebase-admin";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { autonomousResearch } from "@/lib/research";
 
 export async function POST(req: Request) {

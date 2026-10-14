@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/firebase-admin";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { ENGINEERING_TOOLS, ENGINEERING_WORKFLOWS, engineeringToolSummary } from "@/lib/engineering";
 import { planEngineeringMission } from "@/lib/engineering-planner";
 

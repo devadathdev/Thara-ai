@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/firebase-admin";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { prepareEngineeringRun, type EngineeringRun } from "@/lib/engineering-worker";
 
 export const runtime = "nodejs";

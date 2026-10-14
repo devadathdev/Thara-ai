@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyBearerToken } from "@/lib/auth";
+import { verifyBearerToken } from "@/lib/local-auth";
 import { archifyCapabilities, archifyRuntimeStatus, tharaArchitectureSource } from "@/lib/archify";
 
 export async function GET(request: NextRequest) {
