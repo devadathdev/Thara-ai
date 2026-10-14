@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { startAuthentication, startRegistration, browserSupportsWebAuthn } from "@simplewebauthn/browser";
-import { auth } from "@/lib/firebase";
 
 const areas=[["equipment-control","Equipment Control"],["engineering-execution","Engineering Execution"],["private-memory","Private Memory"],["sentinel","Sentinel / Security"]];
 
@@ -11,9 +10,9 @@ export default function LineClear(){
  async function run(){
   try{
    if(!browserSupportsWebAuthn()) throw new Error("This browser does not support WebAuthn.");
-   const user=auth.currentUser; if(!user) throw new Error("Sign in to THARA first.");
+   const session=await fetch("/api/auth/local/session",{cache:"no-store"}).then(r=>r.json()); if(!session.authenticated)throw new Error("Sign in to THARA first.");
    setStatus("REQUESTING BIOMETRIC CHALLENGE…");
-   const idToken=await user.getIdToken();
+   const idToken="local-session";
    const opt=await fetch("/api/auth/line-clear/options?area="+encodeURIComponent(area),{headers:{authorization:"Bearer "+idToken}}).then(r=>r.json());
    if(opt.error)throw new Error(opt.error);
    const response=opt.mode==="registration"?await startRegistration({optionsJSON:opt.options}):await startAuthentication({optionsJSON:opt.options});
