@@ -1,10 +1,10 @@
-name: THARA V6 Checks
+name: THARA Local PostgreSQL Checks
 
 on:
   pull_request:
-    branches: [main, upgrade/v6-model-router]
+    branches: [main, upgrade/v6-model-router, upgrade/v6-guarded-autonomy]
   push:
-    branches: [upgrade/v6-model-router, upgrade/v6-guarded-autonomy]
+    branches: [upgrade/v6-model-router, upgrade/v6-guarded-autonomy, migration/postgres-local-first]
 
 permissions:
   contents: read
@@ -12,7 +12,13 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: postgresql://thara:ci-placeholder-password@127.0.0.1:54329/thara?schema=public
+      THARA_APPROVAL_SECRET: ci-only-secret-not-for-production-0000000000000000
+      THARA_LINE_CLEAR_SECRET: ci-only-line-clear-secret-not-for-production-000000000000
+      THARA_SETUP_SECRET: ci-only-setup-secret-not-for-production-0000000000000000
+      NEXT_PUBLIC_APP_ORIGIN: http://localhost:3000
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,25 +28,11 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Generate Prisma client
+        run: npx prisma generate
       - name: Focused autonomy, mission and approval tests
         run: npm run test:autonomy
       - name: TypeScript check
         run: npx tsc --noEmit
-        env:
-          DATABASE_URL: postgresql://thara:ci-placeholder-password@127.0.0.1:54329/thara?schema=public
       - name: Production build
         run: npm run build
-        env:
-          DATABASE_URL: postgresql://thara:ci-placeholder-password@127.0.0.1:54329/thara?schema=public
-        env:
-          NEXT_PUBLIC_FIREBASE_API_KEY: ci-placeholder-key
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: thara-ci.firebaseapp.com
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: thara-ci
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: thara-ci.appspot.com
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "123456789"
-          NEXT_PUBLIC_FIREBASE_APP_ID: "1:123456789:web:ci"
-          FIREBASE_PROJECT_ID: thara-ci
-          FIREBASE_CLIENT_EMAIL: ci@example.com
-          FIREBASE_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nCI_PLACEHOLDER\n-----END PRIVATE KEY-----"
-          THARA_APPROVAL_SECRET: "ci-only-secret-not-for-production-0000000000000000"
-          NEXT_PUBLIC_APP_ORIGIN: http://localhost:3000
