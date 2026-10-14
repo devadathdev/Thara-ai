@@ -150,3 +150,44 @@ THARA will remain transparent about whether a command was **planned, simulated, 
 **Project:** THARA AI  
 **Architecture:** Next.js + TypeScript + Firebase + server-side model routing  
 **Interface:** Technical blue/cyan command center
+
+## V6 Guarded Engineering Autonomy
+
+The V6 autonomy layer is additive to the existing Next.js + TypeScript + Firebase application.
+
+### Mission lifecycle
+
+`POST /api/missions` creates a user-scoped mission with a canonical plan hash and status `awaiting_approval`. The lifecycle is constrained to explicit transitions; the client cannot mark a mission verified.
+
+1. Request a scoped approval at `POST /api/missions/approval` with `{ "action": "request", "missionId": "..." }`.
+2. Approve the displayed mission at the same endpoint with `{ "action": "approve", "missionId": "..." }`.
+3. The API issues a short-lived token bound to the authenticated Firebase UID, mission ID, plan hash, and registered action list.
+4. Execute a registered tool through `POST /api/missions/execute`. The approval record is consumed transactionally, so the token cannot be replayed.
+5. A verification report records checks and a SHA-256 hash of the output. Mission state becomes `verified` only when the registered tool returns an output and its identity/status checks pass.
+
+### Bounded execution policy
+
+The current executor intentionally exposes only registered, in-process tools:
+- `engineering.plan` — produces a structured engineering workflow plan.
+- `artifact.sha256` — hashes supplied text content within a 100,000-character limit.
+
+There is no shell execution, `eval`, arbitrary filesystem access, physical hardware actuation, or deployment tool in this milestone. A verified plan means the bounded planning operation and its output checks passed; it does **not** mean a CAD solver, simulation, build, or physical device was run.
+
+### Hybrid cloud/local model routing
+
+Local inference is opt-in. Configure a trusted OpenAI-compatible chat-completions endpoint in server-only environment variables:
+
+- `THARA_LOCAL_MODEL_URL` — full chat-completions endpoint URL.
+- `THARA_LOCAL_MODEL_NAME` — local model identifier.
+- `THARA_LOCAL_MODEL_API_KEY` — optional gateway token.
+- `THARA_PREFER_LOCAL=true` — try local inference before cloud providers; otherwise local inference is the final fallback.
+
+A laptop-local endpoint is not reachable from a cloud deployment by default. For hybrid deployments, use a secured private network or authenticated gateway; do not expose an unauthenticated inference port to the public internet.
+
+### Required approval secret
+
+Set `THARA_APPROVAL_SECRET` to a random server-only value of at least 32 characters. Do not use a `NEXT_PUBLIC_` variable for this secret. Without it, approval token issuance fails closed.
+
+### Verification
+
+Run `npm run test:autonomy` to compile and execute the focused autonomy, mission lifecycle, and approval-token tests. Also run `npx tsc --noEmit` and `npm run build` before merging. Those full-project checks are not represented as passed by this change.

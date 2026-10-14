@@ -5,6 +5,7 @@ import { getFirestore } from "firebase-admin/firestore";
 import { ENGINEERING_TOOLS, ENGINEERING_WORKFLOWS, engineeringToolSummary, routeEngineering } from "@/lib/engineering";
 import { planEngineeringMission } from "@/lib/engineering-planner";
 import { allTharaCapabilities, completeCapabilitySummary, capabilityExecutionSummary, getMasterCapabilities } from "@/lib/thara-complete";
+import { buildAutonomyPlan } from "@/lib/orchestrator/autonomy";
 
 export const runtime = "nodejs";
 
@@ -12,7 +13,7 @@ export async function GET(req: Request) {
   try {
     const user = await verifyBearerToken(req);
     const telemetry = await getCapabilityTelemetry(user.uid).catch(()=>[]);
-    return NextResponse.json({ok:true,version:"V7",capabilities:THARA_CAPABILITIES,summary:capabilitySummary(),completeCapabilities:allTharaCapabilities(),completeSummary:completeCapabilitySummary(),executionSummary:capabilityExecutionSummary(),masterCapabilities:getMasterCapabilities(),engineering:{tools:ENGINEERING_TOOLS,workflows:ENGINEERING_WORKFLOWS,summary:engineeringToolSummary()},telemetry});
+    return NextResponse.json({ok:true,version:"V7",runtime:{deployment:"hybrid",localInferenceConfigured:Boolean(process.env.THARA_LOCAL_MODEL_URL),preferLocal:process.env.THARA_PREFER_LOCAL==="true",cloudInferenceConfigured:Boolean(process.env.GEMINI_API_KEY||process.env.OPENROUTER_API_KEY)},capabilities:THARA_CAPABILITIES,summary:capabilitySummary(),completeCapabilities:allTharaCapabilities(),completeSummary:completeCapabilitySummary(),executionSummary:capabilityExecutionSummary(),masterCapabilities:getMasterCapabilities(),engineering:{tools:ENGINEERING_TOOLS,workflows:ENGINEERING_WORKFLOWS,summary:engineeringToolSummary()},telemetry});
   } catch {
     return NextResponse.json({error:"Authentication failed"},{status:401});
   }
@@ -27,10 +28,11 @@ export async function POST(req: Request) {
     const domains = routeCapability(message);
     const engineering = routeEngineering(message);
     const engineeringMission = planEngineeringMission(message);
+    const autonomy = buildAutonomyPlan(message);
     await getFirestore().collection("users").doc(user.uid).collection("tharaTelemetry").add({
       createdAt: Date.now(), event:"capability-route", domains, messageLength:message.length, success:true
     });
-    return NextResponse.json({ok:true,domains,engineering,engineeringMission,capabilities:THARA_CAPABILITIES.filter(c=>domains.includes(c.domain)),matchedCompleteCapabilities:allTharaCapabilities().filter(c=>domains.includes(c.domain))});
+    return NextResponse.json({ok:true,domains,engineering,engineeringMission,autonomy,capabilities:THARA_CAPABILITIES.filter(c=>domains.includes(c.domain)),matchedCompleteCapabilities:allTharaCapabilities().filter(c=>domains.includes(c.domain))});
   } catch {
     return NextResponse.json({error:"Capability service unavailable"},{status:502});
   }
