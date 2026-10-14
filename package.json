@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:debug": "next build --debug"
+    "build:debug": "next build --debug",
+    "test:autonomy": "tsc --target ES2022 --module commonjs --moduleResolution node --strict --skipLibCheck --esModuleInterop --outDir .thara-test-build lib/orchestrator/autonomy.ts tests/autonomy.test.ts && node --test .thara-test-build/tests/autonomy.test.js"
   },
   "dependencies": {
     "firebase": "12.3.0",
