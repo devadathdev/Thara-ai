@@ -13,8 +13,22 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: thara
+          POSTGRES_USER: thara
+          POSTGRES_PASSWORD: ci-placeholder-password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U thara -d thara"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
     env:
-      DATABASE_URL: postgresql://thara:ci-placeholder-password@127.0.0.1:54329/thara?schema=public
+      DATABASE_URL: postgresql://thara:ci-placeholder-password@localhost:5432/thara?schema=public
       THARA_APPROVAL_SECRET: ci-only-secret-not-for-production-0000000000000000
       THARA_LINE_CLEAR_SECRET: ci-only-line-clear-secret-not-for-production-000000000000
       THARA_SETUP_SECRET: ci-only-setup-secret-not-for-production-0000000000000000
@@ -30,7 +44,9 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Generate Prisma client
         run: npx prisma generate
-      - name: Focused autonomy, mission and approval tests
+      - name: Apply PostgreSQL migrations
+        run: npx prisma migrate deploy
+      - name: Focused autonomy, mission, approval and model-routing tests
         run: npm run test:autonomy
       - name: TypeScript check
         run: npx tsc --noEmit

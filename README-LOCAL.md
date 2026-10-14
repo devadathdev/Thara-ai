@@ -10,7 +10,7 @@ Target: one trusted laptop, Next.js + TypeScript, PostgreSQL, and no Firebase at
 1. Copy `.env.example` to `.env.local`; never commit the real file.
 2. Set strong random values for `POSTGRES_PASSWORD` and `THARA_SETUP_SECRET` (at least 32 random characters each).
 3. Set `DATABASE_URL=postgresql://thara:URL_ENCODED_PASSWORD@127.0.0.1:54329/thara?schema=public`.
-4. Start PostgreSQL: `docker compose up -d postgres`.
+4. Start PostgreSQL using the same environment file: `docker compose --env-file .env.local up -d postgres`.
 5. Install Ollama locally and run `ollama pull llama3.2:3b`; keep Ollama bound to localhost.
 6. Install dependencies: `npm install`.
 7. Generate the client: `npm run db:generate`.
