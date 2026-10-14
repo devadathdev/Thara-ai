@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
-import { signInAnonymously } from "firebase/auth";
 
 type Status = {
   configured: boolean;
@@ -15,8 +13,9 @@ export default function ArchitecturePage() {
 
   useEffect(() => {
     (async () => {
-      const user = auth.currentUser ?? (await signInAnonymously(auth)).user;
-      const token = await user.getIdToken();
+      const session = await fetch("/api/auth/local/session",{cache:"no-store"}).then(r=>r.json());
+      if (!session.authenticated) { window.location.replace("/login"); return; }
+      const token = "local-session";
       const response = await fetch("/api/archify", {
         headers: { authorization: `Bearer ${token}` },
       });

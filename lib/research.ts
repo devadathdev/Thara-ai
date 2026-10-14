@@ -16,11 +16,11 @@ export type ResearchReport = {
 export async function autonomousResearch(query: string): Promise<ResearchReport> {
   const search = await webSearch(query);
   const candidates = search.results
-    .filter((r) => /^https?:\/\//i.test(r.url))
+    .filter((r: ResearchSource) => /^https?:\/\//i.test(r.url))
     .slice(0, 5);
 
   const pages = await Promise.all(
-    candidates.map(async (source) => {
+    candidates.map(async (source: ResearchSource) => {
       try {
         const page = await browseUrl(source.url);
         return {

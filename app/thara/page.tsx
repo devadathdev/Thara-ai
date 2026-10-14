@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { auth } from "@/lib/firebase";
-import { signInAnonymously } from "firebase/auth";
 
 const domains = [
   "intelligence","memory","builder","research","voice","multimodal","security","performance",
@@ -49,9 +47,9 @@ export default function TharaV7CommandCenter() {
   const [clock,setClock] = useState(new Date());
 
   async function token() {
-    let u = auth.currentUser;
-    if (!u) u = (await signInAnonymously(auth)).user;
-    return u.getIdToken();
+    const session = await fetch("/api/auth/local/session",{cache:"no-store"}).then(r=>r.json());
+    if (!session.authenticated) { window.location.assign("/login"); throw new Error("Local session required"); }
+    return "local-session";
   }
 
   async function load() {
@@ -59,7 +57,7 @@ export default function TharaV7CommandCenter() {
       const t = await token();
       const r = await fetch("/api/thara",{headers:{authorization:"Bearer "+t}});
       setData(await r.json());
-    } finally { setLoading(false); }
+    } catch { window.location.assign("/login"); } finally { setLoading(false); }
   }
 
   useEffect(()=>{ load(); const id=setInterval(()=>setClock(new Date()),1000); return()=>clearInterval(id); },[]);
@@ -203,7 +201,7 @@ export default function TharaV7CommandCenter() {
 
           {active==="engineering" && <section className="mt-3 grid gap-3 lg:grid-cols-[1.1fr_.9fr]">
             <div className="glass rounded-[28px] p-6"><div className="text-[9px] tracking-[.35em] text-[#63D8FF]">ENGINEERING COMMAND</div><h2 className="mt-2 text-3xl font-bold">CAD → CAE → CAM → IIoT</h2><p className="mt-2 text-xs leading-5 text-white/35">Engineering workflows remain separated from direct machine execution. Generated artifacts and simulation plans are validated before consequential action.</p><div className="mt-6 grid grid-cols-2 gap-2">{Object.entries(data?.engineering?.summary||{}).map(([k,v])=><div key={k} className="rounded-xl border border-white/8 bg-black/20 p-4"><div className="text-[8px] text-white/35">{k.toUpperCase()}</div><div className="mt-1 font-mono text-xl text-[#63D8FF]">{String(v)}</div></div>)}</div></div>
-            <div className="glass rounded-[28px] p-6"><div className="text-[9px] tracking-[.35em] text-[#BBAAFF]">EXECUTION BOUNDARY</div><div className="mt-5 space-y-3">{["Requirements","Parametric CAD","Simulation","Optimization","Manufacturing plan","Digital twin","Telemetry"].map((x,i)=><div key={x} className="flex items-center gap-3 rounded-xl border border-white/8 bg-black/20 p-3"><span className="grid h-7 w-7 place-items-center rounded-lg bg-[#168CFF]/10 font-mono text-[8px] text-[#63D8FF]">0{i+1}</span><span className="text-[9px]">{x}</span><span className="ml-auto text-[7px] text-[#63D8FF]">{i<5?"READY":"GUARDED"}</span></div>)}</div></div>
+            <div className="glass rounded-[28px] p-6"><div className="text-[9px] tracking-[.35em] text-[#BBAAFF]">EXECUTION BOUNDARY</div><div className="mt-5 space-y-3">{["Requirements","Parametric CAD","Simulation","Optimization","Manufacturing plan","Digital twin","Telemetry"].map((x:string,i:number)=><div key={x} className="flex items-center gap-3 rounded-xl border border-white/8 bg-black/20 p-3"><span className="grid h-7 w-7 place-items-center rounded-lg bg-[#168CFF]/10 font-mono text-[8px] text-[#63D8FF]">0{i+1}</span><span className="text-[9px]">{x}</span><span className="ml-auto text-[7px] text-[#63D8FF]">{i<5?"READY":"GUARDED"}</span></div>)}</div></div>
           </section>}
 
           {active==="security" && <section className="mt-3 grid gap-3 lg:grid-cols-2">

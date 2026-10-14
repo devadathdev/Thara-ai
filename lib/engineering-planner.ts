@@ -17,7 +17,7 @@ const stageMap: Record<EngineeringToolCategory, string[]> = {
 
 export function planEngineeringMission(message: string): EngineeringMission {
   const categories = routeEngineering(message);
-  const selected = categories.length ? categories : ["cad"];
+  const selected: EngineeringToolCategory[] = categories.length ? categories : ["cad"];
   const stages = [...new Set(selected.flatMap(c => stageMap[c]))];
   const tools = ENGINEERING_TOOLS.filter(t => selected.includes(t.category)).map(t => t.name);
   return {

@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       return { mission: m, claims: tokenClaims };
     });
 
-    let result: unknown;
+    let result: Awaited<ReturnType<typeof executeApprovedTool>>;
     let verification: ReturnType<typeof verifyToolResult>;
     try {
       result = await executeApprovedTool({ uid: ownerId, mission, action, approvalToken, toolInput: body?.toolInput ?? {} });
